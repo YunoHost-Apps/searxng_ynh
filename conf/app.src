@@ -1,4 +1,6 @@
 SOURCE_URL=https://github.com/searxng/searxng/archive/refs/heads/master.zip
+SOURCE_SUM=5b9b56f31eb030cb86102cebcdbfa942bc4722b7020c922debac070fbcdc229d
+SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
 SOURCE_FILENAME=searxng.zip
