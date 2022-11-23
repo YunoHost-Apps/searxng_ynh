@@ -2,7 +2,7 @@
 Description=__APP__ uWSGI app
 After=syslog.target
 [Service]
-RuntimeDirectory=__FINAL_PATH__
+RuntimeDirectory=__FINALPATH__
 ExecStart=/usr/bin/uwsgi \
         --ini /etc/uwsgi/apps-available/searxng.ini \
         --socket /var/run/searxng/app.socket \
