@@ -185,7 +185,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 ###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
 
 # Start a systemd service
---service_name=uwsgi-app@$app.service --action=start --line_match="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemd_action --service_name=uwsgi-app@$app.service --action=start --line_match="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # SETUP SSOWAT
