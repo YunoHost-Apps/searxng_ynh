@@ -58,7 +58,7 @@ ynh_script_progression --message="Validating installation parameters..." --weigh
 
 ### If the app uses NGINX as web server (written in HTML/PHP in most cases), the final path should be "/var/www/$app".
 ### If the app provides an internal web server (or uses another application server such as uWSGI), the final path should be "/opt/yunohost/$app"
-final_path=/var/www/$app
+final_path="/opt/yunohost/$app"
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
 # Register (book) web path
@@ -71,33 +71,9 @@ ynh_script_progression --message="Storing installation settings..." --weight=1
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=language --value=$language
-ynh_app_setting_set --app=$app --key=admin --value=$admin
 
 #=================================================
 # STANDARD MODIFICATIONS
-#=================================================
-# FIND AND OPEN A PORT
-#=================================================
-ynh_script_progression --message="Finding an available port..." --weight=1
-
-### Use these lines if you have to open a port for the application
-### `ynh_find_port` will find the first available port starting from the given port.
-### If you're not using these lines:
-###		- Remove the section "CLOSE A PORT" in the remove script
-
-# Find an available port
-port=$(ynh_find_port --port=8095)
-ynh_app_setting_set --app=$app --key=port --value=$port
-
-# Optional: Expose this port publicly
-# (N.B.: you only need to do this if the app actually needs to expose the port publicly.
-# If you do this and the app doesn't actually need you are CREATING SECURITY HOLES IN THE SERVER !)
-
-# Open the port
-# ynh_script_progression --message="Configuring firewall..." --weight=1
-# ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
-
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
@@ -120,25 +96,6 @@ ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$app --home_dir="$final_path"
-
-#=================================================
-# CREATE A MYSQL DATABASE
-#=================================================
-ynh_script_progression --message="Creating a MySQL database..." --weight=1
-
-### Use these lines if you need a database for the application.
-### `ynh_mysql_setup_db` will create a database, an associated user and a ramdom password.
-### The password will be stored as 'mysqlpwd' into the app settings,
-### and will be available as $db_pwd
-### If you're not using these lines:
-###		- Remove the section "BACKUP THE MYSQL DATABASE" in the backup script
-###		- Remove also the section "REMOVE THE MYSQL DATABASE" in the remove script
-###		- As well as the section "RESTORE THE MYSQL DATABASE" in the restore script
-
-db_name=$(ynh_sanitize_dbid --db_name=$app)
-db_user=$db_name
-ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -164,86 +121,35 @@ chmod -R o-rwx "$final_path"
 chown -R $app:www-data "$final_path"
 
 #=================================================
-# PHP-FPM CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring PHP-FPM..." --weight=1
-
-### `ynh_add_fpm_config` is used to set up a PHP config.
-### You can remove it if your app doesn't use PHP.
-### `ynh_add_fpm_config` will use the files conf/php-fpm.conf
-### If you're not using these lines:
-###		- You can remove these files in conf/.
-###		- Remove the section "BACKUP THE PHP-FPM CONFIGURATION" in the backup script
-###		- Remove also the section "REMOVE PHP-FPM CONFIGURATION" in the remove script
-###		- As well as the section "RESTORE THE PHP-FPM CONFIGURATION" in the restore script
-###		  with the reload at the end of the script.
-###		- And the section "PHP-FPM CONFIGURATION" in the upgrade script
-
-# Create a dedicated PHP-FPM config
-ynh_add_fpm_config
-
-#=================================================
 # NGINX CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=1
 
 ### `ynh_add_nginx_config` will use the file conf/nginx.conf
 
+path_no_root=${path_url%/}
 # Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_add_nginx_config "path_no_root"
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# ...
+# INSTALL SEARXNG IN A VIRTUALENV
 #=================================================
+ynh_script_progression --message="Installing SearXNG..." --weight=2
 
-#=================================================
-# CREATE DATA DIRECTORY
-#=================================================
-ynh_script_progression --message="Creating a data directory..." --weight=1
-
-### Use these lines if you need to create a directory to store "persistent files" for the application.
-### Usually this directory is used to store uploaded files or any file that won't be updated during 
-### an upgrade and that won't be deleted during app removal unless "--purge" option is used.
-### If you're not using these lines:
-###		- Remove the section "BACKUP THE DATA DIR" in the backup script
-###		- Remove the section "RESTORE THE DATA DIRECTORY" in the restore script
-###     - As well as the section "REMOVE DATA DIR" in the remove script
-
-datadir=/home/yunohost.app/$app
-ynh_app_setting_set --app=$app --key=datadir --value=$datadir
-
-mkdir -p $datadir
-
-# FIXME: this should be managed by the core in the future
-# Here, as a packager, you may have to tweak the ownerhsip/permissions
-# such that the appropriate users (e.g. maybe www-data) can access
-# files in some cases.
-# But FOR THE LOVE OF GOD, do not allow r/x for "others" on the entire folder -
-# this will be treated as a security issue.
-chmod 750 "$datadir"
-chmod -R o-rwx "$datadir"
-chown -R $app:www-data "$datadir"
+python3 -m venv --system-site-packages "$final_path"
+set +u; source $final_path/bin/activate; set -u
+pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
+pip3 install --requirement $final_path/requirements.txt --no-cache-dir
 
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
-### You can add specific configuration files.
-###
-### Typically, put your template conf file in ../conf/your_config_file
-### The template may contain strings such as __FOO__ or __FOO_BAR__,
-### which will automatically be replaced by the values of $foo and $foo_bar
-###
-### ynh_add_config will also keep track of the config file's checksum,
-### which later during upgrade may allow to automatically backup the config file
-### if it's found that the file was manually modified
-###
-### Check the documentation of `ynh_add_config` for more info.
-
-ynh_add_config --template="some_config_file" --destination="$final_path/some_config_file"
+secret_key=$(ynh_string_random)
+ynh_add_config --template="../conf/settings.yml" --destination="$final_path/searx/settings.yml"
 
 # FIXME: this should be handled by the core in the future
 # You may need to use chmod 600 instead of 400,
@@ -278,76 +184,7 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=1
 ynh_add_systemd_config
 
 #=================================================
-# SETUP APPLICATION WITH CURL
-#=================================================
-
-### Use these lines only if the app installation needs to be finalized through
-### web forms. We generally don't want to ask the final user,
-### so we're going to use curl to automatically fill the fields and submit the
-### forms.
-
-# Set the app as temporarily public for curl call
-ynh_script_progression --message="Configuring SSOwat..." --weight=1
-# Making the app public for curl
-ynh_permission_update --permission="main" --add="visitors"
-
-# Installation with curl
-ynh_script_progression --message="Finalizing installation..." --weight=1
-ynh_local_curl "/INSTALL_PATH" "key1=value1" "key2=value2" "key3=value3"
-
-# Remove the public access
-ynh_permission_update --permission="main" --remove="visitors"
-
-#=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Configuring log rotation..." --weight=1
-
-### `ynh_use_logrotate` is used to configure a logrotate configuration for the logs of this app.
-### Use this helper only if there is effectively a log file for this app.
-### If you're not using this helper:
-###		- Remove the section "BACKUP LOGROTATE" in the backup script
-###		- Remove also the section "REMOVE LOGROTATE CONFIGURATION" in the remove script
-###		- As well as the section "RESTORE THE LOGROTATE CONFIGURATION" in the restore script
-###		- And the section "SETUP LOGROTATE" in the upgrade script
-
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
-
-### `yunohost service add` integrates a service in YunoHost. It then gets
-### displayed in the admin interface and through the others `yunohost service` commands.
-### (N.B.: this line only makes sense if the app adds a service to the system!)
-### If you're not using these lines:
-###		- You can remove these files in conf/.
-###		- Remove the section "REMOVE SERVICE INTEGRATION IN YUNOHOST" in the remove script
-###		- As well as the section "INTEGRATE SERVICE IN YUNOHOST" in the restore script
-###		- And the section "INTEGRATE SERVICE IN YUNOHOST" in the upgrade script
-
-yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
-
-### Additional options starting with 3.8:
-###
-### --needs_exposed_ports "$port" a list of ports that needs to be publicly exposed
-###                               which will then be checked by YunoHost's diagnosis system
-###                               (N.B. DO NOT USE THIS is the port is only internal!!!)
-###
-### --test_status "some command"  a custom command to check the status of the service
-###                               (only relevant if 'systemctl status' doesn't do a good job)
-###
-### --test_conf "some command"    some command similar to "nginx -t" that validates the conf of the service
-###
-### Re-calling 'yunohost service add' during the upgrade script is the right way
-### to proceed if you later realize that you need to enable some flags that
-### weren't enabled on old installs (be careful it'll override the existing
-### service though so you should re-provide all relevant flags when doing so)
-
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
@@ -362,15 +199,7 @@ ynh_script_progression --message="Starting a systemd service..." --weight=1
 ###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-ynh_script_progression --message="Configuring Fail2Ban..." --weight=1
-
-# Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
+ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # SETUP SSOWAT
@@ -384,17 +213,6 @@ then
 	# The "main" permission is automatically created before the install script.
 	ynh_permission_update --permission="main" --add="visitors"
 fi
-
-### N.B. : the following extra permissions only make sense if your app
-### does have for example an admin interface or an API.
-
-# Only the admin can access the admin panel of the app (if the app has an admin panel)
-ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
-
-# Everyone can access the API part
-# We don't want to display the tile in the SSO so we put --show_tile="false"
-# And we don't want the YunoHost admin to be able to remove visitors group to this permission, so we put --protected="true"
-ynh_permission_create --permission="api" --url="/api" --allowed="visitors" --show_tile="false" --protected="true"
 
 #=================================================
 # RELOAD NGINX

@@ -1,7 +1,5 @@
-SOURCE_URL=url of app's source
-SOURCE_SUM=sha256 checksum
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
+SOURCE_URL=https://github.com/searxng/searxng/archive/refs/heads/master.zip
+SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=
+SOURCE_FILENAME=searxng.zip
 SOURCE_EXTRACT=true

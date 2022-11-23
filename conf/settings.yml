@@ -1,0 +1,41 @@
+# SearXNG settings
+
+use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "SearXNG"
+
+search:
+  safe_search: 2
+  autocomplete: 'duckduckgo'
+
+server:
+  secret_key: "__SECRET_KEY__"
+  limiter: true
+  image_proxy: true
+
+redis:
+  url: unix:///usr/local/searxng-redis/run/redis.sock?db=0
+
+ui:
+  static_use_hash: true
+
+# preferences:
+#   lock:
+#     - autocomplete
+#     - method
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Search on category select'
+  - 'Self Informations'
+  - 'Tracker URL remover'
+  - 'Ahmia blacklist'
+  # - 'Hostname replace'  # see hostname_replace configuration below
+  # - 'Infinite scroll'
+  # - 'Open Access DOI rewrite'
+  # - 'Vim-like hotkeys'
+
+# plugins:
+#   - only_show_green_results
