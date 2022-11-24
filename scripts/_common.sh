@@ -22,6 +22,7 @@ After=syslog.target
 [Service]
 RuntimeDirectory=%i
 ExecStart=/usr/bin/uwsgi \
+        -H /opt/yunohost/searxng/
         --ini /etc/uwsgi/apps-available/%i.ini \
         --socket /var/run/%i/app.socket \
         --logto /var/log/uwsgi/%i/%i.log
