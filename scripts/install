@@ -136,8 +136,8 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Installing SearXNG..." --weight=2
 
-python3 -m venv --system-site-packages "$final_path"
-set +u; source $final_path/bin/activate; set -u
+python3 -m venv --system-site-packages "$final_path/venv"
+set +u; source $final_path/venv/bin/activate; set -u
 pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
 pip3 install -e "$final_path"
 
