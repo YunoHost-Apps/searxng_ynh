@@ -3,7 +3,9 @@
 #=================================================
 # COMMON VARIABLES
 #=================================================
-pkg_dependencies="python3-dev python3-babel python3-venv uwsgi uwsgi-plugin-python3 git build-essential libxslt-dev zlib1g-dev libffi-dev libssl-dev"
+
+# dependencies used by the app
+pkg_dependencies="git build-essential libxslt-dev python3-dev python3-venv python3-cffi python3-babel zlib1g-dev libffi-dev libssl-dev python3-lxml uwsgi uwsgi-plugin-python3 shellcheck"
 
 #=================================================
 # UWSGI HELPERS
@@ -19,6 +21,7 @@ ynh_check_global_uwsgi_config () {
 [Unit]
 Description=%i uWSGI app
 After=syslog.target
+
 [Service]
 RuntimeDirectory=%i
 ExecStart=/usr/bin/uwsgi \
@@ -32,6 +35,7 @@ KillSignal=SIGQUIT
 Type=notify
 StandardError=syslog
 NotifyAccess=all
+
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -128,14 +132,14 @@ ynh_remove_uwsgi_service () {
     fi
     if [ -e /etc/init.d/uwsgi ]
     then
-        # Redémarre le service uwsgi si il n'est pas désinstallé.
-        ynh_systemd_action --service_name=uwsgi --action=start
+	    # Redémarre le service uwsgi si il n'est pas désinstallé.
+	    ynh_systemd_action --service_name=uwsgi --action=start
     else
-        if yunohost service status | grep -q uwsgi
-        then
-            ynh_print_info --message="Remove uwsgi service"
-            yunohost service remove uwsgi
-        fi
+	    if yunohost service status | grep -q uwsgi
+	    then
+		    ynh_print_info --message="Remove uwsgi service"
+		    yunohost service remove uwsgi
+	    fi
     fi
 }
 

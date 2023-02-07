@@ -127,7 +127,7 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=1
 
 path_no_root=${path_url%/}
 # Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_add_nginx_config "path_no_root"
 
 #=================================================
 # SPECIFIC SETUP
@@ -147,6 +147,7 @@ pip3 install -e "$final_path"
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
 secret_key=$(ynh_string_random)
+# TODO : secret_key ???
 ynh_add_config --template="../conf/settings.yml" --destination="$final_path/searx/settings.yml"
 
 # FIXME: this should be handled by the core in the future
@@ -161,6 +162,11 @@ chown $app:$app "$final_path/searx/settings.yml"
 ###
 ### ynh_replace_string --match_string="match_string" --replace_string="replace_string" --target_file="$final_path/some_config_file"
 ### ynh_store_file_checksum --file="$final_path/some_config_file"
+
+#### ADDED : SET PERMISSIONS ON SEARXNG DIRECTORY (CF SEARX SCRIPT)
+
+chown -R $app: $final_path
+
 
 #=================================================
 # CONFIGURE UWSGI FOR SEARX
