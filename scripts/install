@@ -147,7 +147,7 @@ pip3 install -e "$final_path"
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
 secret_key=$(ynh_string_random)
-full_url="https://$domain$path"
+full_url="https://$domain$path_url"
 ynh_add_config --template="../conf/settings.yml" --destination="$final_path/searx/settings.yml"
 
 # FIXME: this should be handled by the core in the future
