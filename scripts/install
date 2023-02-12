@@ -147,7 +147,6 @@ pip3 install -e "$final_path"
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
 secret_key=$(ynh_string_random)
-# TODO : secret_key ???
 ynh_add_config --template="../conf/settings.yml" --destination="$final_path/searx/settings.yml"
 
 # FIXME: this should be handled by the core in the future
@@ -165,13 +164,13 @@ chown $app:$app "$final_path/searx/settings.yml"
 
 #### ADDED : SET PERMISSIONS ON SEARXNG DIRECTORY (CF SEARX SCRIPT)
 
-chown -R $app: $final_path
+chown -R $app:$app $final_path
 
 
 #=================================================
 # CONFIGURE UWSGI FOR SEARX
 #=================================================
-ynh_script_progression --message="Configuring uWSGI for Searx..." --weight=2
+ynh_script_progression --message="Configuring uWSGI for SearXNG..." --weight=2
 
 ynh_add_uwsgi_service
 
