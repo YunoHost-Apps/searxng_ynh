@@ -9,12 +9,12 @@
     "version": "1.0~ynh1",
     "url": "https://docs.searxng.org/",
     "upstream": {
-        "license": "free",
-        "website": "https://example.com",
-        "demo": "https://demo.example.com",
-        "admindoc": "https://yunohost.org/packaging_apps",
-        "userdoc": "https://yunohost.org/apps",
-        "code": "https://some.forge.com/example/example"
+        "license": " AGPL-3.0-or-later",
+        "website": "https://docs.searxng.org/",
+        "demo": "https://searx.be/",
+        "admindoc": "https://docs.searxng.org/admin/",
+        "userdoc": "https://docs.searxng.org/user/",
+        "code": "https://github.com/searxng/searxng"
     },
     "license": "free",
     "maintainer": {
@@ -37,8 +37,8 @@
             {
                 "name": "path",
                 "type": "path",
-                "example": "/example",
-                "default": "/example"
+                "example": "/searxng",
+                "default": "/searxng"
             },
             {
                 "name": "is_public",
