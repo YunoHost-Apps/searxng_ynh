@@ -29,7 +29,7 @@ Some long and extensive description of what the app is and does, lorem ipsum dol
 
 **Version incluse :** 1.0~ynh1
 
-**Démo :** https://demo.example.com
+**Démo :** https://searx.be/
 
 ## Captures d’écran
 
@@ -52,10 +52,10 @@ Some long and extensive description of what the app is and does, lorem ipsum dol
 
 ## Documentations et ressources
 
-* Site officiel de l’app : <https://example.com>
-* Documentation officielle utilisateur : <https://yunohost.org/apps>
-* Documentation officielle de l’admin : <https://yunohost.org/packaging_apps>
-* Dépôt de code officiel de l’app : <https://some.forge.com/example/example>
+* Site officiel de l’app : <https://docs.searxng.org/>
+* Documentation officielle utilisateur : <https://docs.searxng.org/user/>
+* Documentation officielle de l’admin : <https://docs.searxng.org/admin/>
+* Dépôt de code officiel de l’app : <https://github.com/searxng/searxng>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_searxng>
 * Signaler un bug : <https://github.com/YunoHost-Apps/searxng_ynh/issues>
 
