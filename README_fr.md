@@ -27,7 +27,7 @@ Some long and extensive description of what the app is and does, lorem ipsum dol
 - Excepteur sint occaecat cupidatat non proident, sunt in culpa."
 
 
-**Version incluse :** 1.0~ynh1
+**Version incluse :** 2023.02.20.12.17.38~ynh1
 
 **Démo :** https://searx.be/
 
