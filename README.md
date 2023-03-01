@@ -16,15 +16,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-Some long and extensive description of what the app is and does, lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-
-### Features
-
-- Ut enim ad minim veniam, quis nostrud exercitation ullamco ;
-- Laboris nisi ut aliquip ex ea commodo consequat ;
-- Duis aute irure dolor in reprehenderit in voluptate ;
-- Velit esse cillum dolore eu fugiat nulla pariatur ;
-- Excepteur sint occaecat cupidatat non proident, sunt in culpa."
+SearxXNG is a free internet metasearch engine which aggregates results from more than 70 searxh services. Users are neither tracked nor profiled.
 
 
 **Shipped version:** 2023.02.20.12.17.38~ynh1
@@ -33,22 +25,12 @@ Some long and extensive description of what the app is and does, lorem ipsum dol
 
 ## Screenshots
 
-![Screenshot of SearXNG](./doc/screenshots/example.jpg)
+![Screenshot of SearXNG](./doc/screenshots/screenshot_1.png)
+![Screenshot of SearXNG](./doc/screenshots/screenshot_2.png)
 
 ## Disclaimers / important information
 
-* Any known limitations, constrains or stuff not working, such as (but not limited to):
-    * requiring a full dedicated domain ?
-    * architectures not supported ?
-    * not-working single-sign on or LDAP integration ?
-    * the app requires an important amount of RAM / disk / .. to install or to work properly
-    * etc...
-
-* Other infos that people should be aware of, such as:
-    * any specific step to perform after installing (such as manually finishing the install, specific admin credentials, ...)
-    * how to configure / administrate the application if it ain't obvious
-    * upgrade process / specificities / things to be aware of ?
-    * security considerations ?
+Please note that this application is a rolling-release (i.e. each commit is a release) and thus is updated very regularly. People not updating frequently may encounter some bugs or disruptions due to the very nature of this software.
 
 ## Documentation and resources
 
