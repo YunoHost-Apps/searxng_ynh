@@ -3,8 +3,8 @@
     "id": "searxng",
     "packaging_format": 1,
     "description": {
-        "en": "SearXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled",
-        "fr": "SearXNG est un méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
+        "en": "A free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled",
+        "fr": "Un méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
     },
     "version": "2023.02.20.12.17.38~ynh1",
     "url": "https://docs.searxng.org/",
@@ -16,7 +16,7 @@
         "userdoc": "https://docs.searxng.org/user/",
         "code": "https://github.com/searxng/searxng"
     },
-    "license": "free",
+    "license": "AGPL-3.0-or-later",
     "maintainer": {
         "name": "mh4ckt3mh4ckt1c4s",
         "email": "mh4ckt3mh4ckt1c4s@protonmail.com"

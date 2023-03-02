@@ -127,7 +127,7 @@ ynh_install_app_dependencies $pkg_dependencies
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..." --time --weight=1
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=1
 
 path_no_root=${path_url%/}
 # Create a dedicated NGINX config
