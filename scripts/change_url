@@ -113,7 +113,7 @@ fi
 #=================================================
 ynh_script_progression --message="Reconfiguring SearXNG..." --weight=2
 
-ynh_replace_string --match_string="base_url: \"https://$old_domain$old_path}\"" --replace_string="base_url: \"https://$new_domain$new_path\"" --target_file="$final_path/searxn/settings.yml" 
+ynh_replace_string --match_string="base_url: \"https://$old_domain$old_path}\"" --replace_string="base_url: \"https://$new_domain$new_path\"" --target_file="$final_path/searx/settings.yml" 
 
 #=================================================
 # GENERIC FINALISATION
