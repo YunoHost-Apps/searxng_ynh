@@ -74,7 +74,7 @@ fi
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
-ynh_systemd_action --service_name=uwsgi --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -113,7 +113,7 @@ fi
 #=================================================
 ynh_script_progression --message="Reconfiguring SearXNG..." --weight=2
 
-ynh_replace_string --match_string="base_url: \"https://$old_domain$old_path}\"" --replace_string="base_url: \"https://$new_domain$new_path\"" --target_file="$final_path/searx/settings.yml" 
+ynh_replace_string --match_string="base_url: https://$old_domain$old_path}" --replace_string="base_url: https://$new_domain$new_path" --target_file="$final_path/searx/settings.yml" 
 
 #=================================================
 # GENERIC FINALISATION
