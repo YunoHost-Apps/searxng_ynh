@@ -140,22 +140,14 @@ ynh_add_nginx_config "path_no_root"
 #=================================================
 ynh_script_progression --message="Upgrading SearXNG..." --weight=2
 
-# Clean venv if it still on python2                                                          
-if [ ! -e $final_path/bin/python3 ]                                                          
-then                                                                                         
-        ynh_regex_secure_remove --file=$final_path/lib/ --regex='python[^/.]*'               
-        ynh_regex_secure_remove --file=$final_path/lib64/ --regex='python[^/.]*'             
-        ynh_regex_secure_remove --file=$final_path/share/python-wheels                       
-fi                                                                                           
-ynh_regex_secure_remove --file=$final_path/lib/python3/site-packages/setuptools              
-ynh_regex_secure_remove --file=$final_path/lib/python3/site-packages/ --regex='setuptools-[^/.]*'
-                                                                                             
-python3 -m venv --system-site-packages "$final_path"                                         
-                                                                                             
-set +u; source $final_path/bin/activate; set -u                                              
-pip3 install -U setuptools                                                                   
-pip3 install --requirement $final_path/requirements-ynh.txt --upgrade                        
-                                                                                             
+ynh_secure_remove --file="$final_path/venv"
+
+python3 -m venv --system-site-packages "$final_path/venv"
+
+set +u; source $final_path/venv/bin/activate; set -u
+pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
+pip3 install -e "$final_path"
+
 chown -R $app: "$final_path"
 
 #=================================================
