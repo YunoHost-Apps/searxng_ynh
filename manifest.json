@@ -9,7 +9,7 @@
     "version": "2023.03.02.17.37.25~ynh1",
     "url": "https://docs.searxng.org/",
     "upstream": {
-        "license": " AGPL-3.0-or-later",
+        "license": "AGPL-3.0-or-later",
         "website": "https://docs.searxng.org/",
         "demo": "https://searx.be/",
         "admindoc": "https://docs.searxng.org/admin/",
