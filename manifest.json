@@ -3,8 +3,8 @@
     "id": "searxng",
     "packaging_format": 1,
     "description": {
-        "en": "SearXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled",
-        "fr": "SearXNG est un méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
+        "en": "Metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled",
+        "fr": "Méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
     },
     "version": "2023.03.02.17.37.25~ynh1",
     "url": "https://docs.searxng.org/",
