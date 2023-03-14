@@ -49,7 +49,7 @@ tempdir="$(mktemp -d)"
 
 # Download sources and calculate checksum
 curl --silent -4 -L $asset_url -o "$tempdir/master.zip"
-checksum=$(sha256sum "$tempdir/$filename" | head -c 64)
+checksum=$(sha256sum "$tempdir/master.zip" | head -c 64)
 
 # Delete temporary directory
 rm -rf $tempdir
