@@ -97,6 +97,8 @@ chmod u+rwX,g=rX,o= "/var/log/uwsgi/$app"
 
 ynh_check_global_uwsgi_config
 
+systemctl enable "uwsgi-app@$app.service" --quiet
+
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
