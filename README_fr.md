@@ -26,7 +26,6 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 ## Captures d’écran
 
 ![Capture d’écran de SearXNG](./doc/screenshots/screenshot_1.png)
-![Capture d’écran de SearXNG](./doc/screenshots/screenshot_2.png)
 
 ## Avertissements / informations importantes
 

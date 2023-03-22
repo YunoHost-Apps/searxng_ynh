@@ -21,12 +21,12 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 
 **Shipped version:** 2023.03.22.05.03.48~ynh1
 
+
 **Demo:** https://searx.be/
 
 ## Screenshots
 
 ![Screenshot of SearXNG](./doc/screenshots/screenshot_1.png)
-![Screenshot of SearXNG](./doc/screenshots/screenshot_2.png)
 
 ## Disclaimers / important information
 
