@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/searxng/searxng/archive/ec540a967a66156baa06797183cc64c4a3e345be/master.zip
-SOURCE_SUM=fb0d5a64bd4806696151167d8c1c381367be93943b7ff1fa430396373dd3d38e
+SOURCE_URL=https://github.com/searxng/searxng/archive/7dfcc3386e6787fe2267ae667fefff51cc4286a6/master.zip
+SOURCE_SUM=4dd7abe8c7f149218b5828f0a043d38e6c724406dab5d3d7dcd6fee3b198dfc1
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=zip
 SOURCE_IN_SUBDIR=true
