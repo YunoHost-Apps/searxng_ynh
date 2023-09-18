@@ -55,7 +55,7 @@ then
 	
 	ynh_secure_remove --file="$install_dir/searxng-pyenv"
 	python3 -m venv --system-site-packages "$install_dir/searxng-pyenv"
-	set +u; source "$install_dir/searxng-pyenv/bin/activate"; set -u
+	set +o nounset; source "$install_dir/searxng-pyenv/bin/activate"; set -o nounset
 	pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
 	ynh_exec_fully_quiet pip3 install -e "$install_dir/searxng-src"
 fi
