@@ -8,43 +8,7 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
-
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=1
-
-app=$YNH_APP_INSTANCE_NAME
-
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
-#=================================================
-# CHECK VERSION
-#=================================================
-
-### This helper will compare the version of the currently installed app and the version of the upstream package.
-### $upgrade_type can have 2 different values
-### - UPGRADE_APP if the upstream app version has changed
-### - UPGRADE_PACKAGE if only the YunoHost package has changed
-### ynh_check_app_version_changed will stop the upgrade if the app is up to date.
-### UPGRADE_APP should be used to upgrade the core app only if there's an upgrade to do.
 upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=1
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -53,36 +17,28 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-#
-# N.B. : the followings setting migrations snippets are provided as *EXAMPLES*
-# of what you may want to do in some cases (e.g. a setting was not defined on
-# some legacy installs and you therefore want to initiaze stuff during upgrade)
-#
-
-# If db_name doesn't exist, create it
-#if [ -z "$db_name" ]; then
-#	db_name=$(ynh_sanitize_dbid --db_name=$app)
-#	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-#fi
-
-# If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/var/www/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+if [ ! -e "$data_dir/settings.yml" ]; then
+	secret_key=$(ynh_string_random)
+	ynh_add_config --template="../conf/settings.yml" --destination="$data_dir/settings.yml"
+	chmod 400 "$data_dir/settings.yml"
+	chown $app: "$data_dir"
+fi
+if [ -e "$install_dir/searx" ]; then
+	ynh_secure_remove --file="$install_dir"
+	ynh_delete_file_checksum --file="/opt/yunohost/$app/searx/settings.yml"
 fi
 
-mkdir -p /var/log/uwsgi/$app
-chown $app:$app /var/log/uwsgi/$app
-chmod -R u=rwX,g=rX,o= /var/log/uwsgi/$app
+ynh_delete_file_checksum --file="etc/nginx_conf.d/$domain/$app.conf"
+	
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Stopping a systemd service..." --weight=1
+
+ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path"
-
+# "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -91,91 +47,45 @@ if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=1
 	
-	# create a temporary directory
-	tmpdir=$(mktemp -d)
-
-	# backup the config file in the temp dir
-	cp -a "$final_path/searx/settings.yml"  "$tmpdir/settings.yml"
-
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
-
-	# Copy the saved settings back to final path
-	cp -a "$tmpdir/settings.yml" "$final_path/searx/settings.yml"
-
-	# Remove the temporary directory safely
-	ynh_secure_remove --file="$tmpdir"
+	ynh_secure_remove --file="$install_dir/searxng-src"
+	ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+	pushd "$install_dir/searxng-src"
+		ynh_exec_fully_quiet git checkout "$commit_sha"
+	popd
+	
+	ynh_secure_remove --file="$install_dir/searxng-pyenv"
+	python3 -m venv --system-site-packages "$install_dir/searxng-pyenv"
+	set +u; source "$install_dir/searxng-pyenv/bin/activate"; set -u
+	pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
+	ynh_exec_fully_quiet pip3 install -e "$install_dir/searxng-src"
 fi
 
-# FIXME: this should be managed by the core in the future
-# Here, as a packager, you may have to tweak the ownerhsip/permissions
-# such that the appropriate users (e.g. maybe www-data) can access
-# files in some cases.
-# But FOR THE LOVE OF GOD, do not allow r/x for "others" on the entire folder -
-# this will be treated as a security issue.
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:www-data "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app: "$install_dir"
 
 #=================================================
-# UPGRADE DEPENDENCIES
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=1
+ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
 
-ynh_install_app_dependencies $pkg_dependencies
-
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=1
-
-path_no_root=${path_url%/}
-# Create a dedicated NGINX config
-ynh_add_nginx_config "path_no_root"
+ynh_add_nginx_config
 
 #=================================================
-# SPECIFIC UPGRADE
+# RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS...)
 #=================================================
-# UPGRADE SEARXNG IN ITS VIRTUALENV
+# UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Upgrading SearXNG..." --weight=2
+ynh_script_progression --message="Updating a configuration file..." --weight=1
 
-ynh_secure_remove --file="$final_path/venv"
-
-python3 -m venv --system-site-packages "$final_path/venv"
-
-set +u; source $final_path/venv/bin/activate; set -u
-pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
-pip3 install -e "$final_path"
-
-chown -R $app: "$final_path"
-
-#=================================================
-# CONFIGURE UWSGI FOR SEARX
-#=================================================
-ynh_script_progression --message="Reconfiguring uWSGI for Searx..." --weight=2
-
-# Clean old files
-ynh_secure_remove --file="/etc/uwsgi/apps-enabled/$app.ini"
-ynh_secure_remove --file="/etc/uwsgi/apps-available/$app.ini"
 ynh_add_uwsgi_service
 
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
-
-# Wait for searx to be fully started                                                         
-ynh_systemd_action --service_name=uwsgi-app@$app.service --action=restart --line_match="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
-
-ynh_systemd_action --service_name=nginx --action=reload
+                                                     
+ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="start" --line_match="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
