@@ -17,13 +17,10 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
-if [ ! -e "$data_dir/settings.yml" ]; then
-	secret_key=$(ynh_string_random)
-	ynh_add_config --template="../conf/settings.yml" --destination="$data_dir/settings.yml"
+if [ -e "$install_dir/searx" ]; then
+	mv "$install_dir/searx/settings.yml" "$data_dir/settings.yml"
 	chmod 400 "$data_dir/settings.yml"
 	chown $app: "$data_dir"
-fi
-if [ -e "$install_dir/searx" ]; then
 	ynh_secure_remove --file="$install_dir"
 	ynh_delete_file_checksum --file="/opt/yunohost/$app/searx/settings.yml"
 fi
