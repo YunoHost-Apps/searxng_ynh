@@ -18,6 +18,7 @@ upgrade_type=$(ynh_check_app_version_changed)
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
 
 if [ -e "$install_dir/searx" ]; then
+	sed -i '1s/^/use_default_settings: true\n\n/' "$install_dir/searx/settings.yml"
 	mv "$install_dir/searx/settings.yml" "$data_dir/settings.yml"
 	chmod 400 "$data_dir/settings.yml"
 	chown $app: "$data_dir"
