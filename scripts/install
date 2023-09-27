@@ -28,21 +28,14 @@ set +o nounset; source "$install_dir/searxng-pyenv/bin/activate"; set -o nounset
 pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
 ynh_exec_fully_quiet pip3 install -e "$install_dir/searxng-src"
 
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chown -R $app: "$install_dir"
-
 #=================================================
 # SYSTEM CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring NGINX web server..." --weight=1
-
 ynh_add_nginx_config
+
+ynh_add_uwsgi_service
 
 #=================================================
 # APP INITIAL CONFIGURATION
@@ -52,17 +45,11 @@ ynh_add_nginx_config
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
 secret_key=$(ynh_string_random)
-ynh_add_config --template="../conf/settings.yml" --destination="$data_dir/settings.yml"
+ynh_add_config --template="../conf/settings.yml" --destination="$install_dir/settings.yml"
 
-chmod 400 "$data_dir/settings.yml"
-chown $app: "$data_dir"
-
-#=================================================
-# CONFIGURE UWSGI FOR SEARX
-#=================================================
-ynh_script_progression --message="Configuring uWSGI for SearXNG..." --weight=2
-
-ynh_add_uwsgi_service
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app: "$install_dir"
 
 #=================================================
 # GENERIC FINALIZATION

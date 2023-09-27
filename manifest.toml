@@ -24,8 +24,8 @@ multi_instance = false
 ldap = "not_relevant"
 sso = "not_relevant"
 disk = "210M"
-ram.build = "50M"
-ram.runtime = "50M"
+ram.build = "250M"
+ram.runtime = "200M"
 
 [install]
     [install.domain]
@@ -44,9 +44,6 @@ ram.runtime = "50M"
 
     [resources.install_dir]
     dir = "/var/www/__APP__"
-    
-    [resources.data_dir]
-    dir = "/home/yunohost.app/__APP__"
     
     [resources.permissions]
     main.url = "/"
