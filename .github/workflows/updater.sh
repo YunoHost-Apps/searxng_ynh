@@ -14,8 +14,8 @@
 #=================================================
 
 # Fetching information
-current_version=$(cat manifest.json | jq -j '.version|split("~")[0]')
-repo=$(cat manifest.json | jq -j '.upstream.code|split("https://github.com/")[1]')
+current_version=$(cat manifest.toml | tomlq -j '.version|split("~")[0]')
+repo=$(cat manifest.toml | tomlq -j '.upstream.code|split("https://github.com/")[1]')
 # Some jq magic is needed, because the latest upstream release is not always the latest version (e.g. security patches for older versions)
 version_raw=$(curl --silent "https://api.github.com/repos/$repo/commits/master" | jq -r ".commit.author.date")
 version=$(date -d "$version_raw" +%Y.%m.%d.%H.%M.%S)
@@ -43,42 +43,19 @@ fi
 # UPDATE SOURCE FILES
 #=================================================
 
-asset_url="https://github.com/$repo/archive/$commit_hash/master.zip"
-# Create the temporary directory
-tempdir="$(mktemp -d)"
-
-# Download sources and calculate checksum
-curl --silent -4 -L $asset_url -o "$tempdir/master.zip"
-checksum=$(sha256sum "$tempdir/master.zip" | head -c 64)
-
-# Delete temporary directory
-rm -rf $tempdir
-
-# Rewrite source file
-cat <<EOT > conf/app.src
-SOURCE_URL=$asset_url
-SOURCE_SUM=$checksum
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=zip
-SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=searxng.zip
-SOURCE_EXTRACT=true
-EOT
-echo "... conf/$src.src updated"
-
 #=================================================
 # SPECIFIC UPDATE STEPS
 #=================================================
 
-# Any action on the app's source code can be done.
-# The GitHub Action workflow takes care of committing all changes after this script ends.
+# Replace new version in _common.sh
+sed -i "s/^commit_sha=.*/commit_sha=$commit_hash/" scripts/_common.sh
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
 
 # Replace new version in manifest
-echo "$(jq -s --indent 4 ".[] | .version = \"$version~ynh1\"" manifest.json)" > manifest.json
+sed -i "s/^version = .*/version = \"$version~ynh1\"/" manifest.toml
 
 # No need to update the README, yunohost-bot takes care of it
 
