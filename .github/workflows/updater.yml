@@ -46,9 +46,9 @@ jobs:
           author: 'yunohost-bot <yunohost-bot@users.noreply.github.com>'
           signoff: false
           base: testing
-          branch: ci-auto-update-v${{ env.VERSION }}
+          branch: ci-auto-update-v${{ env.VERSION }}-testing
           delete-branch: true
-          title: 'Upgrade to version ${{ env.VERSION }}'
+          title: 'Upgrade to version ${{ env.VERSION }} into testing'
           body: |
             Upgrade to v${{ env.VERSION }}
             [See upstream release page](https://github.com/${{ env.REPO }}/releases/tag/v${{ env.VERSION }})
