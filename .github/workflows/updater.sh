@@ -48,7 +48,7 @@ fi
 #=================================================
 
 # Replace new version in _common.sh
-sed -i "s/^commit_sha=.*/commit_sha=$commit_hash/" scripts/_common.sh
+sed -i "s/^commit_sha=.*/commit_sha=\"$commit_hash\"/" scripts/_common.sh
 
 #=================================================
 # GENERIC FINALIZATION
