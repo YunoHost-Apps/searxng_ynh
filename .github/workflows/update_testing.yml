@@ -21,3 +21,6 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           branch: testing-promotion
+          title: 'Upgrade testing from master'
+          body: |
+            Upgrade testing from master
