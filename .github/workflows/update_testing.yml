@@ -1,0 +1,23 @@
+name: Create testing promotion pull request
+on:
+  # Allow to manually trigger the workflow
+  workflow_dispatch:
+  # Run it when when someone pushes to master
+  push:
+    branches:
+      - master
+jobs:
+  testingPromotion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: testing
+      - name: Reset promotion branch
+        run: |
+          git fetch origin master:master
+          git reset --hard master
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: testing-promotion
