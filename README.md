@@ -19,7 +19,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Shipped version:** 2023.09.18.10.00.00~ynh1
+**Shipped version:** 2023.10.01.18.13.08~ynh1
 
 **Demo:** https://searx.be
 
@@ -33,7 +33,6 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 * Official user documentation: <https://docs.searxng.org/user/>
 * Official admin documentation: <https://docs.searxng.org/admin/>
 * Upstream app code repository: <https://github.com/searxng/searxng>
-* YunoHost documentation for this app: <https://yunohost.org/app_searxng>
 * Report a bug: <https://github.com/YunoHost-Apps/searxng_ynh/issues>
 
 ## Developer info
