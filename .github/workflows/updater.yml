@@ -35,8 +35,8 @@ jobs:
         if: ${{ env.PROCEED == 'true' }}
         run: |
           git commit -am "Upgrade to v$VERSION"
-      - name: Create Pull Request
-        id: cpr
+      - name: Create Pull Request to testing
+        id: cpr-testing
         if: ${{ env.PROCEED == 'true' }}
         uses: peter-evans/create-pull-request@v4
         with:
