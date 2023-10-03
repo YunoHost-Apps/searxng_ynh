@@ -41,24 +41,6 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Update testing to version ${{ env.VERSION }}
-          committer: 'yunohost-bot <yunohost-bot@users.noreply.github.com>'
-          author: 'yunohost-bot <yunohost-bot@users.noreply.github.com>'
-          signoff: false
-          base: testing
-          branch: ci-auto-update-v${{ env.VERSION }}-testing
-          delete-branch: true
-          title: 'Upgrade to version ${{ env.VERSION }} into testing'
-          body: |
-            Upgrade to v${{ env.VERSION }}
-            [See upstream release page](https://github.com/${{ env.REPO }}/releases/tag/v${{ env.VERSION }})
-          draft: false
-      - name: Create Pull Request to master
-        id: cpr-master
-        if: ${{ env.PROCEED == 'true' }}
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update master to version ${{ env.VERSION }}
           committer: 'yunohost-bot <yunohost-bot@users.noreply.github.com>'
           author: 'yunohost-bot <yunohost-bot@users.noreply.github.com>'
