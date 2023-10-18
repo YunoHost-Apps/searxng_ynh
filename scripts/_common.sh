@@ -108,7 +108,9 @@ ynh_remove_uwsgi_service () {
 # usage: ynh_backup_uwsgi_service
 ynh_backup_uwsgi_service () {
 	ynh_backup --src_path="/etc/uwsgi/apps-available/$app.ini"
-	ynh_backup --src_path="/etc/systemd/system/uwsgi-app@$app.service.d"
+	if [ -e "/etc/systemd/system/uwsgi-app@$app.service.d" ]; then
+		ynh_backup --src_path="/etc/systemd/system/uwsgi-app@$app.service.d"
+	fi
 }
 
 # Restore the dedicated uwsgi config
