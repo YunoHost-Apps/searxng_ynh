@@ -34,7 +34,6 @@ Restart=always
 RestartSec=10
 KillSignal=SIGQUIT
 Type=notify
-StandardError=syslog
 NotifyAccess=all
 
 [Install]
@@ -108,9 +107,7 @@ ynh_remove_uwsgi_service () {
 # usage: ynh_backup_uwsgi_service
 ynh_backup_uwsgi_service () {
 	ynh_backup --src_path="/etc/uwsgi/apps-available/$app.ini"
-	if [ -e "/etc/systemd/system/uwsgi-app@$app.service.d" ]; then
-		ynh_backup --src_path="/etc/systemd/system/uwsgi-app@$app.service.d"
-	fi
+	ynh_backup --src_path="/etc/systemd/system/uwsgi-app@$app.service.d" --not_mandatory
 }
 
 # Restore the dedicated uwsgi config
