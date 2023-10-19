@@ -117,7 +117,7 @@ ynh_backup_uwsgi_service () {
 ynh_restore_uwsgi_service () {
 	ynh_check_global_uwsgi_config
 	ynh_restore_file --origin_path="/etc/uwsgi/apps-available/$app.ini"
-	ynh_restore_file --origin_path="/etc/systemd/system/uwsgi-app@$app.service.d"
+	ynh_restore_file --origin_path="/etc/systemd/system/uwsgi-app@$app.service.d" --not_mandatory
 
 	mkdir -p "/var/log/uwsgi/$app"
 	chown $app:root "/var/log/uwsgi/$app"
