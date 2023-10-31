@@ -33,6 +33,7 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 * Documentation officielle utilisateur : <https://docs.searxng.org/user/>
 * Documentation officielle de l’admin : <https://docs.searxng.org/admin/>
 * Dépôt de code officiel de l’app : <https://github.com/searxng/searxng>
+* YunoHost Store: <https://apps.yunohost.org/app/searxng>
 * Signaler un bug : <https://github.com/YunoHost-Apps/searxng_ynh/issues>
 
 ## Informations pour les développeurs
