@@ -19,7 +19,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Shipped version:** 2024.02.23.15.49.17~ynh1
+**Shipped version:** 2024.02.25.17.15.34~ynh1
 
 **Demo:** https://searx.be
 
