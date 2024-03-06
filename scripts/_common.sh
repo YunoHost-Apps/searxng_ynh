@@ -5,7 +5,7 @@
 #=================================================
 
 repo_fullpath="https://github.com/searxng/searxng"
-commit_sha="d72fa99bd0a4d702a55188b07919ce5a764b1d6c"
+commit_sha="b7be53bb908fe0771a77f2efc715e49d40bced2f"
 
 #=================================================
 # UWSGI HELPERS
