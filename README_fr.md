@@ -18,10 +18,9 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
+**Version incluse :** 2024.03.15.07.57.49~ynh1
 
-**Version incluse :** 2024.03.01.17.25.33~ynh1
-
-**Démo :** https://searx.be
+**Démo :** <https://searx.be>
 
 ## Captures d’écran
 
@@ -29,12 +28,12 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 
 ## Documentations et ressources
 
-* Site officiel de l’app : <https://docs.searxng.org>
-* Documentation officielle utilisateur : <https://docs.searxng.org/user/>
-* Documentation officielle de l’admin : <https://docs.searxng.org/admin/>
-* Dépôt de code officiel de l’app : <https://github.com/searxng/searxng>
-* YunoHost Store: <https://apps.yunohost.org/app/searxng>
-* Signaler un bug : <https://github.com/YunoHost-Apps/searxng_ynh/issues>
+- Site officiel de l’app : <https://docs.searxng.org>
+- Documentation officielle utilisateur : <https://docs.searxng.org/user/>
+- Documentation officielle de l’admin : <https://docs.searxng.org/admin/>
+- Dépôt de code officiel de l’app : <https://github.com/searxng/searxng>
+- YunoHost Store : <https://apps.yunohost.org/app/searxng>
+- Signaler un bug : <https://github.com/YunoHost-Apps/searxng_ynh/issues>
 
 ## Informations pour les développeurs
 
@@ -42,7 +41,7 @@ Merci de faire vos pull request sur la [branche testing](https://github.com/Yuno
 
 Pour essayer la branche testing, procédez comme suit.
 
-``` bash
+```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/searxng_ynh/tree/testing --debug
 ou
 sudo yunohost app upgrade searxng -u https://github.com/YunoHost-Apps/searxng_ynh/tree/testing --debug
