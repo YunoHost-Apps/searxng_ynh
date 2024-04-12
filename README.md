@@ -11,7 +11,6 @@ It shall NOT be edited by hand.
 
 *[Read this README in other languages.](./ALL_README.md)*
 
-
 > *This package allows you to install SearXNG quickly and simply on a YunoHost server.*  
 > *If you don't have YunoHost, please consult [the guide](https://yunohost.org/install) to learn how to install it.*
 
