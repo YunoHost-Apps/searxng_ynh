@@ -19,7 +19,7 @@ It shall NOT be edited by hand.
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Shipped version:** 2024.04.26.21.42.29~ynh1
+**Shipped version:** 2024.04.26.22.24.06~ynh1
 
 **Demo:** <https://searx.be>
 
