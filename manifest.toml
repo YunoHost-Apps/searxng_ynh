@@ -5,7 +5,7 @@ name = "SearXNG"
 description.en = "A free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled"
 description.fr = "Un méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
 
-version = "2024.05.17.07.51.17~ynh1"
+version = "2024.05.31.07.09.22~ynh1"
 
 maintainers = ["mh4ckt3mh4ckt1c4s"]
 
