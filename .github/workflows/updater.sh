@@ -17,7 +17,7 @@
 current_version=$(cat manifest.toml | tomlq -j '.version|split("~")[0]')
 repo=$(cat manifest.toml | tomlq -j '.upstream.code|split("https://github.com/")[1]')
 # Some jq magic is needed, because the latest upstream release is not always the latest version (e.g. security patches for older versions)
-version_raw=$(curl --silent "https://api.github.com/repos/$repo/commits/master" | jq -r ".commit.author.date")
+version_raw=$(curl --silent "https://api.github.com/repos/$repo/commits/master" | jq -r ".commit.committer.date")
 version=$(date -d "$version_raw" +%Y.%m.%d.%H.%M.%S)
 commit_hash=$(curl --silent "https://api.github.com/repos/$repo/commits/master" | jq -r ".sha")
 
