@@ -16,10 +16,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=1
 
-ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
-pushd "$install_dir/searxng-src"
-	ynh_exec_fully_quiet git checkout "$commit_sha"
-popd
+ynh_setup_source --dest_dir="$install_dir/searxng-src"
 
 ynh_script_progression --message="Installing SearXNG..." --weight=2
 

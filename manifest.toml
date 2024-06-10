@@ -7,7 +7,7 @@ description.fr = "Un méta-moteur de recherche qui rassemble les résultats de p
 
 version = "2024.05.17.07.51.17~ynh1"
 
-maintainers = ["mh4ckt3mh4ckt1c4s"]
+maintainers = ["mh4ckt3mh4ckt1c4s", "ewilly"]
 
 [upstream]
 license = "AGPL-3.0-or-later"
@@ -40,6 +40,13 @@ ram.runtime = "200M"
     default = "visitors"
 
 [resources]
+    [resources.sources]
+
+        [resources.sources.main]
+        url = "https://github.com/searxng/searxng/archive/f5eb56b63f250c7804e5e1cf4426e550bc933906.tar.gz"
+        sha256 = "5424c916ba6312fb22d14b7eac268e40995bda073e480b3e6c8e9d63dcd5e087"
+        autoupdate.strategy = "latest_github_commit"
+
     [resources.system_user]
 
     [resources.install_dir]
