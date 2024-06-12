@@ -50,7 +50,7 @@ then
 	
 	ynh_secure_remove --file="$install_dir/searxng-src"
 	repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
-	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename | tr -d"." -f1)
+	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
 	ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
 	pushd "$install_dir/searxng-src"
 		ynh_exec_fully_quiet git checkout "$commit_sha"
