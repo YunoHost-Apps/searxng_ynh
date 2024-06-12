@@ -4,9 +4,6 @@
 # COMMON VARIABLES
 #=================================================
 
-repo_fullpath="https://github.com/searxng/searxng"
-commit_sha="ec41b535876c7906871ea25638837db3dbc5e4ab"
-
 #=================================================
 # UWSGI HELPERS
 #=================================================
