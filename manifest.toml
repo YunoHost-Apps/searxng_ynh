@@ -18,7 +18,7 @@ userdoc = "https://docs.searxng.org/user/"
 code = "https://github.com/searxng/searxng"
 
 [integration]
-yunohost = ">= 11.2.14.1"
+yunohost = ">= 11.2.14"
 architectures = "all"
 multi_instance = false
 ldap = "not_relevant"
