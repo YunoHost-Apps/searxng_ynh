@@ -2,8 +2,8 @@ packaging_format = 2
 
 id = "searxng"
 name = "SearXNG"
-description.en = "A free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled"
-description.fr = "Un méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
+description.en = "Internet metasearch engine which aggregates results from more than 70 search services"
+description.fr = "Méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche"
 
 version = "2024.06.13~ynh1"
 
