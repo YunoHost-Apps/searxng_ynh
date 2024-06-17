@@ -2,10 +2,10 @@ packaging_format = 2
 
 id = "searxng"
 name = "SearXNG"
-description.en = "A free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled"
-description.fr = "Un méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche. Les utilisateurs ne sont ni suivis ni espionnés"
+description.en = "Internet metasearch engine which aggregates results from more than 70 search services"
+description.fr = "Méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche"
 
-version = "2024.05.17.07.51.17~ynh1"
+version = "2024.06.15~ynh1"
 
 maintainers = ["mh4ckt3mh4ckt1c4s", "ewilly"]
 
@@ -18,7 +18,7 @@ userdoc = "https://docs.searxng.org/user/"
 code = "https://github.com/searxng/searxng"
 
 [integration]
-yunohost = ">= 11.2.14.1"
+yunohost = ">= 11.2.14"
 architectures = "all"
 multi_instance = false
 ldap = "not_relevant"
@@ -43,8 +43,8 @@ ram.runtime = "200M"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://github.com/searxng/searxng/archive/f5eb56b63f250c7804e5e1cf4426e550bc933906.tar.gz"
-        sha256 = "5424c916ba6312fb22d14b7eac268e40995bda073e480b3e6c8e9d63dcd5e087"
+        url = "https://github.com/searxng/searxng/archive/13eec44b65d19dedddfd85755ed2adab2a22187c.tar.gz"
+        sha256 = "5cf2f295054199f77865a4648aec7fc6a2d11f8d3aca79d988f2ea8ea01b6b6a"
         autoupdate.strategy = "latest_github_commit"
 
     [resources.system_user]
