@@ -5,7 +5,7 @@ No se debe editar a mano.
 
 # SearXNG para Yunohost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/searxng.svg)](https://dash.yunohost.org/appci/app/searxng) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/searxng.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/searxng.maintain.svg)
+[![Nivel de integración](https://dash.yunohost.org/integration/searxng.svg)](https://ci-apps.yunohost.org/ci/apps/searxng/) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/searxng.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/searxng.maintain.svg)
 
 [![Instalar SearXNG con Yunhost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=searxng)
 
@@ -19,7 +19,7 @@ No se debe editar a mano.
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Versión actual:** 2024.06.21~ynh1
+**Versión actual:** 2024.06.25~ynh1
 
 **Demo:** <https://searx.be>
 
