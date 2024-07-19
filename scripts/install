@@ -27,7 +27,7 @@ ynh_script_progression --message="Installing SearXNG..." --weight=2
 
 python3 -m venv --system-site-packages "$install_dir/searxng-pyenv"
 set +o nounset; source "$install_dir/searxng-pyenv/bin/activate"; set -o nounset
-pip3 install -U pip setuptools wheel pyyaml --no-cache-dir
+pip3 install -U pip "setuptools<71.0.0" wheel pyyaml --no-cache-dir
 ynh_exec_fully_quiet pip3 install -e "$install_dir/searxng-src"
 
 #=================================================
