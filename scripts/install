@@ -14,21 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --weight=1
-
-repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
-commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
-ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
-pushd "$install_dir/searxng-src"
-	ynh_exec_fully_quiet git checkout "$commit_sha"
-popd
-
-ynh_script_progression --message="Installing SearXNG..." --weight=2
-
-python3 -m venv --system-site-packages "$install_dir/searxng-pyenv"
-set +o nounset; source "$install_dir/searxng-pyenv/bin/activate"; set -o nounset
-pip3 install -U pip "setuptools<71.0.0" wheel pyyaml --no-cache-dir
-ynh_exec_fully_quiet pip3 install -e "$install_dir/searxng-src"
+myynh_install_searxng
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -49,9 +35,7 @@ ynh_script_progression --message="Adding a configuration file..." --weight=1
 secret_key=$(ynh_string_random)
 ynh_add_config --template="../conf/settings.yml" --destination="$install_dir/settings.yml"
 
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chown -R $app: "$install_dir"
+myynh_set_permissions
 
 #=================================================
 # GENERIC FINALIZATION

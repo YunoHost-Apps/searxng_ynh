@@ -5,6 +5,79 @@
 #=================================================
 
 #=================================================
+# PERSONAL HELPERS
+#=================================================
+
+# Install/Upgrade SearXNG in virtual environement
+myynh_install_searxng () {
+
+	ynh_script_progression --message="Setting up source files..." --weight=1
+
+	# Download source
+	repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
+	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
+	ynh_exec_as $app git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+	pushd "$install_dir/searxng-src"
+		ynh_exec_as $app git checkout "$commit_sha"
+	popd
+
+	# Create the virtual environment
+	ynh_exec_as $app python3 -m venv "$install_dir/searxng-pyenv"
+
+	# Source the virtual environment in the user profile
+	ynh_exec_as $app echo ". $install_dir/searxng-pyenv/bin/activate" >>  "$install_dir/.profile"
+
+	ynh_script_progression --message="Installing SearXNG..." --weight=2
+	# Install SearXNG in a 'sub shell'
+	(
+		# Check if virtualenv was sourced from the login
+		ynh_exec_as $app echo $(command -v python && python --version)
+
+		# Install last version of pip
+		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade pip
+
+		# Install last version of setuptools
+		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade setuptools
+
+		# Install last version of wheel
+		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade wheel
+
+		# Install last version of pyyaml
+		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade pyyaml
+
+		# Install SearXNG
+		cd "$install_dir/searxng-src"
+		pip install -e .
+	)
+}
+
+# Upgrade the virtual environment directory
+myynh_upgrade_venv_directory () {
+
+	# Remove old python links before recreating them
+	find "$install_dir/bin/" -type l -name 'python*' \
+		-exec bash -c 'rm --force "$1"' _ {} \;
+
+	# Remove old python directories before recreating them
+	find "$install_dir/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
+		-not -path "*/python${py_required_version%.*}" \
+		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	find "$install_dir/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
+		-not -path "*/python${py_required_version%.*}" \
+		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+
+	# Upgrade the virtual environment directory
+	ynh_exec_as $app $py_app_version -m venv --upgrade "$install_dir"
+}
+
+# Set permissions
+myynh_set_permissions () {
+	chown -R $app: "$install_dir"
+	chmod 750 "$install_dir"
+	chmod -R o-rwx "$install_dir"
+}
+
+#=================================================
 # UWSGI HELPERS
 #=================================================
 
