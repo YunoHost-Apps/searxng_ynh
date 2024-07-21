@@ -17,9 +17,9 @@ myynh_source_searxng () {
 	# Download source
 	sudo -i -u $app bash << EOF
 mkdir "$install_dir/searxng-src"
-git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+git clone -n "$repo_fullpath" "$install_dir/searxng-src" 2>&1
 pushd "$install_dir/searxng-src"
-	git checkout "$commit_sha"
+	git checkout "$commit_sha" 2>&1
 popd
 EOF
 }
@@ -55,10 +55,10 @@ myynh_upgrade_venv_directory () {
 
 	# Remove old python directories before recreating them
 	find "$install_dir/searxng-pyenv/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
-		-not -path "*/python${py_required_version%.*}" \
+		-not -path "*/python*" \
 		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
 	find "$install_dir/searxng-pyenv/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
-		-not -path "*/python${py_required_version%.*}" \
+		-not -path "*/python*" \
 		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
 
 	# Upgrade the virtual environment directory
