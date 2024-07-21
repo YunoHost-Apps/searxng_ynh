@@ -15,9 +15,9 @@ myynh_source_searxng () {
 	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
 
 	# Download source
-	ynh_exec_as $app ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+	ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
 	pushd "$install_dir/searxng-src"
-		ynh_exec_as $app ynh_exec_fully_quiet git checkout "$commit_sha"
+		ynh_exec_fully_quiet git checkout "$commit_sha"
 	popd
 }
 
