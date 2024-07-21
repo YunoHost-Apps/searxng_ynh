@@ -15,26 +15,27 @@ myynh_source_searxng () {
 	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
 
 	# Download source
-	ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
-	git config --global --add safe.directory "$install_dir/searxng-src"
-	pushd "$install_dir/searxng-src"
-		ynh_exec_fully_quiet git checkout "$commit_sha"
-	popd
+	sudo -i -u $app bash << EOF
+git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+pushd "$install_dir/searxng-src"
+	ynh_exec_fully_quiet git checkout "$commit_sha"
+popd
+EOF
 }
 
 myynh_install_searxng () {
 	# Create the virtual environment
-	sudo -i -u $app bash << EOF
+	sudo -H -u $app -i bash << EOF
 python3 -m venv "$install_dir/searxng-pyenv"
 echo ". $install_dir/searxng-pyenv/bin/activate" >>  "$install_dir/.profile"
 EOF
 
 	# Check if virtualenv was sourced from the login
-	sudo -i -u $app bash << EOF
+	sudo -H -u $app -i bash << EOF
 command -v python && python --version
 EOF
 
-	sudo -i -u $app bash << EOF
+	sudo -H -u $app -i bash << EOF
 pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --upgrade wheel
@@ -60,7 +61,9 @@ myynh_upgrade_venv_directory () {
 		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
 
 	# Upgrade the virtual environment directory
-	ynh_exec_as $app $py_app_version -m venv --upgrade "$install_dir"
+	sudo -H -u $app -i bash << EOF
+python3 -m venv --upgrade "$install_dir"
+EOF
 }
 
 # Set permissions
