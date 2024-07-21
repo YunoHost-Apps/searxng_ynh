@@ -16,9 +16,10 @@ myynh_source_searxng () {
 
 	# Download source
 	sudo -i -u $app bash << EOF
+mkdir "$install_dir/searxng-src"
 git clone -n "$repo_fullpath" "$install_dir/searxng-src"
 pushd "$install_dir/searxng-src"
-	ynh_exec_fully_quiet git checkout "$commit_sha"
+	git checkout "$commit_sha"
 popd
 EOF
 }
@@ -49,14 +50,14 @@ EOF
 myynh_upgrade_venv_directory () {
 
 	# Remove old python links before recreating them
-	find "$install_dir/bin/" -type l -name 'python*' \
+	find "$install_dir/searxng-pyenv/bin/" -type l -name 'python*' \
 		-exec bash -c 'rm --force "$1"' _ {} \;
 
 	# Remove old python directories before recreating them
-	find "$install_dir/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
+	find "$install_dir/searxng-pyenv/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
 		-not -path "*/python${py_required_version%.*}" \
 		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
-	find "$install_dir/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
+	find "$install_dir/searxng-pyenv/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
 		-not -path "*/python${py_required_version%.*}" \
 		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
 
