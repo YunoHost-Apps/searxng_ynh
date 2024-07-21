@@ -16,6 +16,7 @@ myynh_source_searxng () {
 
 	# Download source
 	ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+	git config --global --add safe.directory "$install_dir/searxng-src"
 	pushd "$install_dir/searxng-src"
 		ynh_exec_fully_quiet git checkout "$commit_sha"
 	popd
