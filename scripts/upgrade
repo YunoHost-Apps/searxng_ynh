@@ -47,6 +47,7 @@ ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	myynh_upgrade_venv_directory
+	myynh_source_searxng
 	myynh_install_searxng
 fi
 

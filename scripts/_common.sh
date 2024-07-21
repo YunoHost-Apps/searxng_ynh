@@ -9,46 +9,38 @@
 #=================================================
 
 # Install/Upgrade SearXNG in virtual environement
-myynh_install_searxng () {
-
-	ynh_script_progression --message="Setting up source files..." --weight=1
-
-	# Download source
+myynh_source_searxng () {
+	# Retrieve info from manifest
 	repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
 	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
-	ynh_exec_as $app git clone -n "$repo_fullpath" "$install_dir/searxng-src"
+
+	# Download source
+	ynh_exec_as $app ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
 	pushd "$install_dir/searxng-src"
-		ynh_exec_as $app git checkout "$commit_sha"
+		ynh_exec_as $app ynh_exec_fully_quiet git checkout "$commit_sha"
 	popd
+}
 
+myynh_install_searxng () {
 	# Create the virtual environment
-	ynh_exec_as $app python3 -m venv "$install_dir/searxng-pyenv"
+	sudo -i -u $app bash << EOF
+python3 -m venv "$install_dir/searxng-pyenv"
+echo ". $install_dir/searxng-pyenv/bin/activate" >>  "$install_dir/.profile"
+EOF
 
-	# Source the virtual environment in the user profile
-	ynh_exec_as $app echo ". $install_dir/searxng-pyenv/bin/activate" >>  "$install_dir/.profile"
+	# Check if virtualenv was sourced from the login
+	sudo -i -u $app bash << EOF
+command -v python && python --version
+EOF
 
-	ynh_script_progression --message="Installing SearXNG..." --weight=2
-	# Install SearXNG in a 'sub shell'
-	(
-		# Check if virtualenv was sourced from the login
-		ynh_exec_as $app echo $(command -v python && python --version)
-
-		# Install last version of pip
-		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade pip
-
-		# Install last version of setuptools
-		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade setuptools
-
-		# Install last version of wheel
-		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade wheel
-
-		# Install last version of pyyaml
-		ynh_exec_warn_less ynh_exec_as $app pip install --upgrade pyyaml
-
-		# Install SearXNG
-		cd "$install_dir/searxng-src"
-		pip install -e .
-	)
+	sudo -i -u $app bash << EOF
+pip install --upgrade pip
+pip install --upgrade setuptools
+pip install --upgrade wheel
+pip install --upgrade pyyaml
+cd "$install_dir/searxng-src"
+pip install -e .
+EOF
 }
 
 # Upgrade the virtual environment directory
