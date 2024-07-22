@@ -16,7 +16,10 @@ myynh_source_searxng () {
 
 	# Download source
 	sudo -i -u $app bash << EOF
-mkdir "$install_dir/searxng-src"
+if [ ! -d "$install_dir/searxng-src" ]
+then
+	mkdir "$install_dir/searxng-src"
+endif
 git clone -n "$repo_fullpath" "$install_dir/searxng-src" 2>&1
 pushd "$install_dir/searxng-src"
 	git checkout "$commit_sha" 2>&1
