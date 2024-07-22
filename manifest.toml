@@ -5,7 +5,7 @@ name = "SearXNG"
 description.en = "Internet metasearch engine which aggregates results from more than 70 search services"
 description.fr = "Méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche"
 
-version = "2024.07.08~ynh2"
+version = "2024.07.08~ynh3"
 
 maintainers = ["mh4ckt3mh4ckt1c4s", "ewilly"]
 
@@ -56,4 +56,4 @@ ram.runtime = "200M"
     main.url = "/"
     
     [resources.apt]
-    packages = "git, build-essential, libxslt-dev, python3-dev, python3-venv, python3-cffi, python3-babel, zlib1g-dev, libffi-dev, libssl-dev, python3-lxml, uwsgi, uwsgi-plugin-python3, shellcheck"
+    packages = "python3-dev, python3-babel, python3-venv, uwsgi, uwsgi-plugin-python3, git, build-essential, libxslt-dev, zlib1g-dev, libffi-dev, libssl-dev"
