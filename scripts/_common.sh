@@ -16,10 +16,7 @@ myynh_source_searxng () {
 
 	# Download source
 	sudo -H -u $app -i bash << EOF
-if [ ! -d "$install_dir/searxng-src" ]
-then
-	mkdir "$install_dir/searxng-src"
-fi
+mkdir "$install_dir/searxng-src"
 git clone -n "$repo_fullpath" "$install_dir/searxng-src" 2>&1
 EOF
 
@@ -51,39 +48,6 @@ pip install --upgrade wheel
 pip install --upgrade pyyaml
 cd "$install_dir/searxng-src"
 pip install -e .
-EOF
-}
-
-# Upgrade the virtual environment directory
-myynh_upgrade_venv_directory () {
-
-	# Remove old python links before recreating them
-	if [ -d "$install_dir/searxng-pyenv/bin/" ]
-	then
-		find "$install_dir/searxng-pyenv/bin/" \
-			-type l -name 'python*' \
-			-exec bash -c 'rm --force "$1"' _ {} \;
-	fi
-
-	# Remove old python directories before recreating them
-	if [ -d "$install_dir/searxng-pyenv/lib/" ]
-	then
-		find "$install_dir/searxng-pyenv/lib/" \
-			-mindepth 1 -maxdepth 1 -type d -name "python*" \
-			-not -path "*/python*" \
-			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
-	fi
-	if [ -d "$install_dir/searxng-pyenv/include/site/" ]
-	then
-		find "$install_dir/searxng-pyenv/include/site/" \
-			-mindepth 1 -maxdepth 1 -type d -name "python*" \
-			-not -path "*/python*" \
-			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
-	fi
-
-	# Upgrade the virtual environment directory
-	sudo -H -u $app -i bash << EOF
-python3 -m venv --upgrade "$install_dir/searxng-pyenv"
 EOF
 }
 

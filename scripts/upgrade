@@ -46,7 +46,8 @@ ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	myynh_upgrade_venv_directory
+	ynh_secure_remove --file="$install_dir/searxng-src"
+	ynh_secure_remove --file="$install_dir/searxng-pyenv"
 	myynh_source_searxng
 	myynh_install_searxng
 fi
