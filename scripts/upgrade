@@ -46,26 +46,15 @@ ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
-	
+	ynh_secure_remove --file="$install_dir/.profile"
+	ynh_secure_remove --file="$install_dir/.cache"
 	ynh_secure_remove --file="$install_dir/searxng-src"
-	repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
-	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
-	ynh_exec_fully_quiet git clone -n "$repo_fullpath" "$install_dir/searxng-src"
-	pushd "$install_dir/searxng-src"
-		ynh_exec_fully_quiet git checkout "$commit_sha"
-	popd
-	
 	ynh_secure_remove --file="$install_dir/searxng-pyenv"
-	python3 -m venv --system-site-packages "$install_dir/searxng-pyenv"
-	set +o nounset; source "$install_dir/searxng-pyenv/bin/activate"; set -o nounset
-	pip3 install -U pip "setuptools<71.0.0" wheel pyyaml --no-cache-dir
-	ynh_exec_fully_quiet pip3 install -e "$install_dir/searxng-src"
+	myynh_source_searxng
+	myynh_install_searxng
 fi
 
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chown -R $app: "$install_dir"
+myynh_set_permissions
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS

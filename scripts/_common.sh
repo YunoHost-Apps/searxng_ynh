@@ -5,6 +5,60 @@
 #=================================================
 
 #=================================================
+# PERSONAL HELPERS
+#=================================================
+
+# Install/Upgrade SearXNG in virtual environement
+myynh_source_searxng () {
+	# Retrieve info from manifest
+	repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
+	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
+
+	# Download source
+	sudo -H -u $app -i bash << EOF
+mkdir "$install_dir/searxng-src"
+git clone -n "$repo_fullpath" "$install_dir/searxng-src" 2>&1
+EOF
+
+	# Checkout commit
+	pushd "$install_dir/searxng-src"
+	sudo -H -u $app -i bash << EOF
+	cd "$install_dir/searxng-src"
+	git checkout "$commit_sha" 2>&1
+EOF
+	popd
+}
+
+myynh_install_searxng () {
+	# Create the virtual environment
+	sudo -H -u $app -i bash << EOF
+python3 -m venv "$install_dir/searxng-pyenv"
+echo ". $install_dir/searxng-pyenv/bin/activate" >  "$install_dir/.profile"
+EOF
+
+	# Check if virtualenv was sourced from the login
+	sudo -H -u $app -i bash << EOF
+command -v python && python --version
+EOF
+
+	sudo -H -u $app -i bash << EOF
+pip install --upgrade pip
+pip install --upgrade setuptools
+pip install --upgrade wheel
+pip install --upgrade pyyaml
+cd "$install_dir/searxng-src"
+pip install -e .
+EOF
+}
+
+# Set permissions
+myynh_set_permissions () {
+	chown -R $app: "$install_dir"
+	chmod 750 "$install_dir"
+	chmod -R o-rwx "$install_dir"
+}
+
+#=================================================
 # UWSGI HELPERS
 #=================================================
 
@@ -71,7 +125,8 @@ ynh_add_uwsgi_service () {
 
 	# Setup specific Systemd rules if necessary
 	mkdir -p "/etc/systemd/system/uwsgi-app@$app.service.d"
-	if [ -e "../conf/uwsgi-app@override.service" ]; then
+	if [ -e "../conf/uwsgi-app@override.service" ]
+	then
 		ynh_add_config --template="uwsgi-app@override.service" --destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
 	fi
 
@@ -87,7 +142,8 @@ ynh_add_uwsgi_service () {
 # usage: ynh_remove_uwsgi_service
 ynh_remove_uwsgi_service () {
 	local finaluwsgiini="/etc/uwsgi/apps-available/$app.ini"
-	if [ -e "$finaluwsgiini" ]; then
+	if [ -e "$finaluwsgiini" ]
+	then
 		yunohost service remove "uwsgi-app@$app"
 		ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop"
 		ynh_exec_fully_quiet ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="disable"
