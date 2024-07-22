@@ -15,7 +15,7 @@ myynh_source_searxng () {
 	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
 
 	# Download source
-	sudo -i -u $app bash << EOF
+	sudo -H -u $app -i bash << EOF
 if [ ! -d "$install_dir/searxng-src" ]
 then
 	mkdir "$install_dir/searxng-src"
@@ -25,7 +25,7 @@ EOF
 
 	# Checkout commit
 	pushd "$install_dir/searxng-src"
-	sudo -i -u $app bash << EOF
+	sudo -H -u $app -i bash << EOF
 	cd "$install_dir/searxng-src"
 	git checkout "$commit_sha" 2>&1
 EOF
