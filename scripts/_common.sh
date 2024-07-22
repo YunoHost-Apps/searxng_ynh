@@ -28,7 +28,7 @@ myynh_install_searxng () {
 	# Create the virtual environment
 	sudo -H -u $app -i bash << EOF
 python3 -m venv "$install_dir/searxng-pyenv"
-echo ". $install_dir/searxng-pyenv/bin/activate" >>  "$install_dir/.profile"
+echo ". $install_dir/searxng-pyenv/bin/activate" >  "$install_dir/.profile"
 EOF
 
 	# Check if virtualenv was sourced from the login
@@ -50,20 +50,32 @@ EOF
 myynh_upgrade_venv_directory () {
 
 	# Remove old python links before recreating them
-	find "$install_dir/searxng-pyenv/bin/" -type l -name 'python*' \
-		-exec bash -c 'rm --force "$1"' _ {} \;
+	if [ -d "$install_dir/searxng-pyenv/bin/" ]
+	then
+		find "$install_dir/searxng-pyenv/bin/" \
+			-type l -name 'python*' \
+			-exec bash -c 'rm --force "$1"' _ {} \;
+	fi
 
 	# Remove old python directories before recreating them
-	find "$install_dir/searxng-pyenv/lib/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
-		-not -path "*/python*" \
-		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
-	find "$install_dir/searxng-pyenv/include/site/" -mindepth 1 -maxdepth 1 -type d -name "python*" \
-		-not -path "*/python*" \
-		-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	if [ -d "$install_dir/searxng-pyenv/lib/" ]
+	then
+		find "$install_dir/searxng-pyenv/lib/" \
+			-mindepth 1 -maxdepth 1 -type d -name "python*" \
+			-not -path "*/python*" \
+			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	fi
+	if [ -d "$install_dir/searxng-pyenv/include/site/" ]
+	then
+		find "$install_dir/searxng-pyenv/include/site/" \
+			-mindepth 1 -maxdepth 1 -type d -name "python*" \
+			-not -path "*/python*" \
+			-exec bash -c 'rm --force --recursive "$1"' _ {} \;
+	fi
 
 	# Upgrade the virtual environment directory
 	sudo -H -u $app -i bash << EOF
-python3 -m venv --upgrade "$install_dir"
+python3 -m venv --upgrade "$install_dir/searxng-pyenv"
 EOF
 }
 
@@ -141,7 +153,8 @@ ynh_add_uwsgi_service () {
 
 	# Setup specific Systemd rules if necessary
 	mkdir -p "/etc/systemd/system/uwsgi-app@$app.service.d"
-	if [ -e "../conf/uwsgi-app@override.service" ]; then
+	if [ -e "../conf/uwsgi-app@override.service" ]
+	then
 		ynh_add_config --template="uwsgi-app@override.service" --destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
 	fi
 
@@ -157,7 +170,8 @@ ynh_add_uwsgi_service () {
 # usage: ynh_remove_uwsgi_service
 ynh_remove_uwsgi_service () {
 	local finaluwsgiini="/etc/uwsgi/apps-available/$app.ini"
-	if [ -e "$finaluwsgiini" ]; then
+	if [ -e "$finaluwsgiini" ]
+	then
 		yunohost service remove "uwsgi-app@$app"
 		ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop"
 		ynh_exec_fully_quiet ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="disable"
