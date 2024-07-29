@@ -19,7 +19,7 @@ Ini TIDAK boleh diedit dengan tangan.
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Versi terkirim:** 2024.07.08~ynh3
+**Versi terkirim:** 2024.07.28~ynh1
 
 **Demo:** <https://searx.be>
 
@@ -32,7 +32,7 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 - Website aplikasi resmi: <https://docs.searxng.org>
 - Dokumentasi pengguna resmi: <https://docs.searxng.org/user/>
 - Dokumentasi admin resmi: <https://docs.searxng.org/admin/>
-- Repositori kode aplikasi hulu: <https://github.com/searxng/searxng>
+- Depot kode aplikasi hulu: <https://github.com/searxng/searxng>
 - Gudang YunoHost: <https://apps.yunohost.org/app/searxng>
 - Laporkan bug: <https://github.com/YunoHost-Apps/searxng_ynh/issues>
 
