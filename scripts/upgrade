@@ -1,42 +1,33 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
-upgrade_type=$(ynh_check_app_version_changed)
 
-#=================================================
-# STANDARD UPGRADE STEPS
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
+ynh_script_progression "Ensuring downward compatibility..."
 
 if [ -e "$install_dir/searx" ]; then
 	tempdir="$(mktemp -d)"
 	mv "$install_dir/searx/settings.yml" "$tempdir/settings.yml"
 	sed -i '1s/^/use_default_settings: true\n\n/' "$tempdir/settings.yml"
-	ynh_secure_remove --file="$install_dir"
+	ynh_safe_rm "$install_dir"
 	mkdir "$install_dir"
 	mv "$tempdir/settings.yml" "$install_dir/settings.yml"
-	ynh_secure_remove --file="$tempdir"
-	ynh_store_file_checksum --file="$install_dir/settings.yml"
-	ynh_delete_file_checksum --file="/opt/yunohost/$app/searx/settings.yml"
+	ynh_safe_rm "$tempdir"
+	ynh_store_file_checksum "$install_dir/settings.yml"
+	ynh_delete_file_checksum "/opt/yunohost/$app/searx/settings.yml"
 fi
 
-ynh_delete_file_checksum --file="etc/nginx_conf.d/$domain/$app.conf"
-	
+ynh_delete_file_checksum "etc/nginx_conf.d/$domain/$app.conf"
+
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
@@ -44,12 +35,13 @@ ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop" --log
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
+if ynh_app_upstream_version_changed
 then
-	ynh_secure_remove --file="$install_dir/.profile"
-	ynh_secure_remove --file="$install_dir/.cache"
-	ynh_secure_remove --file="$install_dir/searxng-src"
-	ynh_secure_remove --file="$install_dir/searxng-pyenv"
+	ynh_safe_rm "$install_dir/.profile"
+	ynh_safe_rm "$install_dir/.cache"
+	ynh_safe_rm "$install_dir/searxng-src"
+	ynh_safe_rm "$install_dir/searxng-pyenv"
 	myynh_source_searxng
 	myynh_install_searxng
 fi
@@ -59,28 +51,28 @@ myynh_set_permissions
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
-ynh_add_nginx_config
+ynh_config_add_nginx
 
 #=================================================
 # RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS...)
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-ynh_script_progression --message="Updating a configuration file..." --weight=1
+ynh_script_progression "Updating configuration..."
 
 ynh_add_uwsgi_service
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
-                                                     
-ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="start" --line_match="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_script_progression "Starting $app's systemd service..."
+
+ynh_systemctl --service="uwsgi-app@$app.service" --action="start" --wait_until="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
