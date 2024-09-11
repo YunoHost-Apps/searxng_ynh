@@ -7,7 +7,7 @@
 # Install/Upgrade SearXNG in virtual environement
 myynh_source_searxng () {
 	# Retrieve info from manifest
-	repo_fullpath=$(ynh_read_manifest
+	repo_fullpath=$(ynh_read_manifest)
 	commit_sha=$(ynh_read_manifest | xargs basename --suffix=".tar.gz")
 
 	# Download source
