@@ -47,7 +47,7 @@ pip install --upgrade setuptools
 pip install --upgrade wheel
 pip install --upgrade pyyaml
 cd "$install_dir/searxng-src"
-pip install -e .
+pip install --use-pep517 --no-build-isolation -e .
 EOF
 }
 
