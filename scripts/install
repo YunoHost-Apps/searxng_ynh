@@ -4,14 +4,13 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression "Setting up source files..."
 myynh_source_searxng
 
 ynh_script_progression "Installing SearXNG..."
+
 myynh_install_searxng
 
 #=================================================

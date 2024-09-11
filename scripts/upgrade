@@ -30,8 +30,6 @@ ynh_script_progression "Stopping $app's systemd service..."
 ynh_systemctl --service="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
-# "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
-#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
@@ -55,8 +53,6 @@ ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
 
-#=================================================
-# RECONFIGURE THE APP (UPDATE CONF, APPLY MIGRATIONS...)
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
