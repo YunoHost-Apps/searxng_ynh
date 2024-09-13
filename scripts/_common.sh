@@ -8,7 +8,7 @@
 myynh_source_searxng () {
 	# Retrieve info from manifest
 	repo_fullpath=$(ynh_read_manifest "upstream.code")
-	commit_sha=$(ynh_read_manifest"resources.sources.main.url" | xargs basename --suffix=".tar.gz")
+	commit_sha=$(ynh_read_manifest "resources.sources.main.url" | xargs basename --suffix=".tar.gz")
 
 	# Download source
 	sudo -H -u $app -i bash << EOF
