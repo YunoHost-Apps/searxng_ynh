@@ -168,7 +168,8 @@ ynh_restore_uwsgi_service () {
 	ynh_check_global_uwsgi_config
 	ynh_restore "/etc/uwsgi/apps-available/$app.ini"
 	ynh_restore "/etc/systemd/system/uwsgi-app@$app.service.d" || true
-
+	chown $app:root "/etc/uwsgi/apps-available/$app.ini"
+	chown -R $app:root "/etc/systemd/system/uwsgi-app@$app.service.d" || true
 	mkdir -p "/var/log/uwsgi/$app"
 	chown $app:root "/var/log/uwsgi/$app"
 	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
