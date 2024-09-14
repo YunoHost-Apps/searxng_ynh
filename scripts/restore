@@ -10,8 +10,6 @@ ynh_script_progression "Restoring the app main directory..."
 
 ynh_restore "$install_dir"
 
-myynh_set_permissions
-
 #=================================================
 # RESTORE SYSTEM CONFIGURATIONS
 #=================================================
