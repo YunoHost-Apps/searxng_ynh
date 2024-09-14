@@ -50,8 +50,14 @@ EOF
 # Set permissions
 myynh_set_permissions () {
 	chown -R $app: "$install_dir"
-	chmod 750 "$install_dir"
+	chmod u=rwX,g=rX,o= "$install_dir"
 	chmod -R o-rwx "$install_dir"
+
+	chown $app:root "/etc/uwsgi/apps-available/$app.ini"
+	chown -R $app:root "/etc/systemd/system/uwsgi-app@$app.service.d" || true
+
+	chown $app:root "/var/log/uwsgi/$app"
+	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
 }
 
 #=================================================
@@ -117,8 +123,6 @@ ynh_add_uwsgi_service () {
 
 	# make sure the folder for logs exists and set authorizations
 	mkdir -p "/var/log/uwsgi/$app"
-	chown $app:root "/var/log/uwsgi/$app"
-	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
 
 	# Setup specific Systemd rules if necessary
 	mkdir -p "/etc/systemd/system/uwsgi-app@$app.service.d"
@@ -168,11 +172,8 @@ ynh_restore_uwsgi_service () {
 	ynh_check_global_uwsgi_config
 	ynh_restore "/etc/uwsgi/apps-available/$app.ini"
 	ynh_restore "/etc/systemd/system/uwsgi-app@$app.service.d" || true
-	chown $app:root "/etc/uwsgi/apps-available/$app.ini"
-	chown -R $app:root "/etc/systemd/system/uwsgi-app@$app.service.d" || true
+
 	mkdir -p "/var/log/uwsgi/$app"
-	chown $app:root "/var/log/uwsgi/$app"
-	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
 
 	ynh_systemctl --service="uwsgi-app@$app.service" --action="enable"
 	yunohost service add "uwsgi-app@$app" --description="uWSGI service for searxng" --log "/var/log/uwsgi/$app/$app.log"

@@ -5,9 +5,9 @@ name = "SearXNG"
 description.en = "Internet metasearch engine which aggregates results from more than 70 search services"
 description.fr = "Méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche"
 
-version = "2024.09.06~ynh1"
+version = "2024.09.06~ynh2"
 
-maintainers = ["mh4ckt3mh4ckt1c4s", "ewilly"]
+maintainers = ["ewilly"]
 
 [upstream]
 license = "AGPL-3.0-or-later"
