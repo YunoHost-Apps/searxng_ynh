@@ -1,18 +1,14 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
-#=================================================
-
-#=================================================
-# PERSONAL HELPERS
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
 # Install/Upgrade SearXNG in virtual environement
 myynh_source_searxng () {
 	# Retrieve info from manifest
-	repo_fullpath=$(ynh_read_manifest --manifest_key="upstream.code")
-	commit_sha=$(ynh_read_manifest --manifest_key="resources.sources.main.url" | xargs basename --suffix=".tar.gz")
+	repo_fullpath=$(ynh_read_manifest "upstream.code")
+	commit_sha=$(ynh_read_manifest "resources.sources.main.url" | xargs basename --suffix=".tar.gz")
 
 	# Download source
 	sudo -H -u $app -i bash << EOF
@@ -54,8 +50,14 @@ EOF
 # Set permissions
 myynh_set_permissions () {
 	chown -R $app: "$install_dir"
-	chmod 750 "$install_dir"
+	chmod u=rwX,g=rX,o= "$install_dir"
 	chmod -R o-rwx "$install_dir"
+
+	chown $app:root "/etc/uwsgi/apps-available/$app.ini"
+	chown -R $app:root "/etc/systemd/system/uwsgi-app@$app.service.d" || true
+
+	chown $app:root "/var/log/uwsgi/$app"
+	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
 }
 
 #=================================================
@@ -66,7 +68,7 @@ myynh_set_permissions () {
 #
 # usage: ynh_check_global_uwsgi_config
 ynh_check_global_uwsgi_config () {
-	uwsgi --version || ynh_die --message="You need to add uwsgi (and appropriate plugin) as a dependency"
+	uwsgi --version || ynh_die "You need to add uwsgi (and appropriate plugin) as a dependency"
 
 	cat > "/etc/systemd/system/uwsgi-app@.service" <<EOF
 [Unit]
@@ -98,10 +100,11 @@ EOF
 #
 # To be able to customise the settings of the systemd unit you can override the rules with the file "conf/uwsgi-app@override.service".
 # This file will be automatically placed on the good place
-# 
+#
+
 # Note that the service need to be started manually at the end of the installation.
 # Generally you can start the service with this command:
-# ynh_systemd_action --service_name "uwsgi-app@$app.service" --line_match "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
+# ynh_systemctl --service "uwsgi-app@$app.service" --wait_until "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
 #
 # usage: ynh_add_uwsgi_service
 #
@@ -112,26 +115,24 @@ ynh_add_uwsgi_service () {
 	local finaluwsgiini="/etc/uwsgi/apps-available/$app.ini"
 
 	# www-data group is needed since it is this nginx who will start the service
-	usermod --append --groups www-data "$app" || ynh_die --message="It wasn't possible to add user $app to group www-data"
+	usermod --append --groups www-data "$app" || ynh_die "It wasn't possible to add user $app to group www-data"
 
-	ynh_add_config --template="uwsgi.ini" --destination="$finaluwsgiini"
-	ynh_store_file_checksum --file="$finaluwsgiini"
+	ynh_config_add --template="uwsgi.ini" --destination="$finaluwsgiini"
+	ynh_store_file_checksum "$finaluwsgiini"
 	chown $app:root "$finaluwsgiini"
 
 	# make sure the folder for logs exists and set authorizations
 	mkdir -p "/var/log/uwsgi/$app"
-	chown $app:root "/var/log/uwsgi/$app"
-	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
 
 	# Setup specific Systemd rules if necessary
 	mkdir -p "/etc/systemd/system/uwsgi-app@$app.service.d"
 	if [ -e "../conf/uwsgi-app@override.service" ]
 	then
-		ynh_add_config --template="uwsgi-app@override.service" --destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
+		ynh_config_add --template="uwsgi-app@override.service" --destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
 	fi
 
 	systemctl daemon-reload
-	ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="enable"
+	ynh_systemctl --service="uwsgi-app@$app.service" --action="enable"
 
 	# Add as a service
 	yunohost service add "uwsgi-app@$app" --description="uWSGI service for searxng" --log "/var/log/uwsgi/$app/$app.log"
@@ -145,12 +146,12 @@ ynh_remove_uwsgi_service () {
 	if [ -e "$finaluwsgiini" ]
 	then
 		yunohost service remove "uwsgi-app@$app"
-		ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="stop"
-		ynh_exec_fully_quiet ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="disable"
+		ynh_systemctl --service="uwsgi-app@$app.service" --action="stop"
+		ynh_systemctl --service="uwsgi-app@$app.service" --action="disable"
 
-		ynh_secure_remove --file="$finaluwsgiini"
-		ynh_secure_remove --file="/var/log/uwsgi/$app"
-		ynh_secure_remove --file="/etc/systemd/system/uwsgi-app@$app.service.d"
+		ynh_safe_rm "$finaluwsgiini"
+		ynh_safe_rm "/var/log/uwsgi/$app"
+		ynh_safe_rm "/etc/systemd/system/uwsgi-app@$app.service.d"
 	fi
 }
 
@@ -159,8 +160,8 @@ ynh_remove_uwsgi_service () {
 #
 # usage: ynh_backup_uwsgi_service
 ynh_backup_uwsgi_service () {
-	ynh_backup --src_path="/etc/uwsgi/apps-available/$app.ini"
-	ynh_backup --src_path="/etc/systemd/system/uwsgi-app@$app.service.d" --not_mandatory
+	ynh_backup "/etc/uwsgi/apps-available/$app.ini"
+	ynh_backup "/etc/systemd/system/uwsgi-app@$app.service.d" || true
 }
 
 # Restore the dedicated uwsgi config
@@ -169,13 +170,11 @@ ynh_backup_uwsgi_service () {
 # usage: ynh_restore_uwsgi_service
 ynh_restore_uwsgi_service () {
 	ynh_check_global_uwsgi_config
-	ynh_restore_file --origin_path="/etc/uwsgi/apps-available/$app.ini"
-	ynh_restore_file --origin_path="/etc/systemd/system/uwsgi-app@$app.service.d" --not_mandatory
+	ynh_restore "/etc/uwsgi/apps-available/$app.ini"
+	ynh_restore "/etc/systemd/system/uwsgi-app@$app.service.d" || true
 
 	mkdir -p "/var/log/uwsgi/$app"
-	chown $app:root "/var/log/uwsgi/$app"
-	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
-    
-	ynh_systemd_action --service_name="uwsgi-app@$app.service" --action="enable"
+
+	ynh_systemctl --service="uwsgi-app@$app.service" --action="enable"
 	yunohost service add "uwsgi-app@$app" --description="uWSGI service for searxng" --log "/var/log/uwsgi/$app/$app.log"
 }
