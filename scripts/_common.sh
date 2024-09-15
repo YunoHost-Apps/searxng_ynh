@@ -42,6 +42,7 @@ pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --upgrade wheel
 pip install --upgrade pyyaml
+pip install --upgrade pybind11
 cd "$install_dir/searxng-src"
 pip install --use-pep517 --no-build-isolation -e .
 EOF
