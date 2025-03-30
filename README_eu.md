@@ -21,7 +21,7 @@ EZ editatu eskuz.
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Paketatutako bertsioa:** 2025.03.21~ynh1
+**Paketatutako bertsioa:** 2025.03.29~ynh1
 
 **Demoa:** <https://searx.be>
 
@@ -42,7 +42,7 @@ SearxXNG is a free internet metasearch engine which aggregates results from more
 
 Bidali `pull request`a [`testing` abarrera](https://github.com/YunoHost-Apps/searxng_ynh/tree/testing).
 
-`testing` abarra probatzeko, ondorengoa egin:
+`testing` abarra probatzeko, honakoa egin:
 
 ```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/searxng_ynh/tree/testing --debug
