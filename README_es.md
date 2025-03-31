@@ -3,7 +3,7 @@ Este archivo README esta generado automaticamente<https://github.com/YunoHost/ap
 No se debe editar a mano.
 -->
 
-# SearXNG para Yunohost
+# SearXNG para YunoHost
 
 [![Nivel de integración](https://apps.yunohost.org/badge/integration/searxng)](https://ci-apps.yunohost.org/ci/apps/searxng/)
 ![Estado funcional](https://apps.yunohost.org/badge/state/searxng)
@@ -21,7 +21,7 @@ No se debe editar a mano.
 SearxXNG is a free internet metasearch engine which aggregates results from more than 70 search services. Users are neither tracked nor profiled.
 
 
-**Versión actual:** 2025.03.21~ynh1
+**Versión actual:** 2025.03.29~ynh1
 
 **Demo:** <https://searx.be>
 
