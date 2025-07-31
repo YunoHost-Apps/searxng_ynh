@@ -31,6 +31,7 @@ ynh_script_progression "Adding $app's configuration..."
 
 secret_key=$(ynh_string_random)
 ynh_config_add --template="settings.yml" --destination="$install_dir/settings.yml"
+ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" --destination="$install_dir/limiter.toml"
 
 myynh_set_permissions
 

@@ -32,16 +32,17 @@ ynh_systemctl --service="uwsgi-app@$app.service" --action="stop" --log_path="/va
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Upgrading source files..."
 
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed
-then
-	ynh_safe_rm "$install_dir/.profile"
-	ynh_safe_rm "$install_dir/.cache"
-	ynh_safe_rm "$install_dir/searxng-src"
-	ynh_safe_rm "$install_dir/searxng-pyenv"
-	myynh_source_searxng
-	myynh_install_searxng
+ynh_safe_rm "$install_dir/.profile"
+ynh_safe_rm "$install_dir/.cache"
+ynh_safe_rm "$install_dir/searxng-src"
+ynh_safe_rm "$install_dir/searxng-pyenv"
+myynh_source_searxng
+myynh_install_searxng
+
+if [ ! -e "$install_dir/limiter.toml" ]; then
+	ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" --destination="$install_dir/limiter.toml"
 fi
 
 myynh_set_permissions
@@ -52,11 +53,6 @@ myynh_set_permissions
 ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
-
-#=================================================
-# UPDATE A CONFIG FILE
-#=================================================
-ynh_script_progression "Updating configuration..."
 
 ynh_add_uwsgi_service
 
