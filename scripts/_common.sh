@@ -44,6 +44,7 @@ pip install --upgrade wheel
 pip install --upgrade pyyaml
 pip install --upgrade pybind11
 pip install --upgrade tomli
+pip install --upgrade lxml
 cd "$install_dir/searxng-src"
 pip install --use-pep517 --no-build-isolation -e .
 EOF
