@@ -3,33 +3,33 @@
 #=================================================
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
-
-# Install/Upgrade SearXNG in virtual environement
-myynh_source_searxng () {
-	# Retrieve info from manifest
-	repo_fullpath=$(ynh_read_manifest "upstream.code")
-	commit_sha=$(ynh_read_manifest "resources.sources.main.url" | xargs basename --suffix=".tar.gz")
-
+myynh_setup_source () {
 	# Download source
-	sudo -H -u $app -i bash << EOF
-mkdir "$install_dir/searxng-src"
-git clone -n "$repo_fullpath" "$install_dir/searxng-src" 2>&1
-EOF
+	mkdir "$install_dir/searxng-src"
+	ynh_setup_source --dest_dir="$install_dir/searxng-src"
 
-	# Checkout commit
-	pushd "$install_dir/searxng-src"
-	sudo -H -u $app -i bash << EOF
-	cd "$install_dir/searxng-src"
-	git checkout "$commit_sha" 2>&1
-EOF
-	popd
+	# Retrieve version information
+	local version=$(ynh_read_manifest "version" | cut -d'~' -f1)
+	local commit=$(ynh_read_manifest "resources.sources.main.url" | xargs basename | head -c 9)
+
+	# Set needed information
+	version_string="$version+$commit"
+	git_url=$(ynh_read_manifest "upstream.code")
+
+	# Replace hardcoded information
+	ynh_replace_regex --match="^VERSION_STRING: str = .*" \
+		--replace="VERSION_STRING: str = \"$version_string\"" \
+		--file="$install_dir/searxng-src/searx/version.py"
+	ynh_replace_regex --match="^GIT_URL: str = .*" \
+		--replace="GIT_URL: str = \"$git_url\"" \
+		--file="$install_dir/searxng-src/searx/version.py"
 }
 
 myynh_install_searxng () {
 	# Create the virtual environment
 	sudo -H -u $app -i bash << EOF
 python3 -m venv "$install_dir/searxng-pyenv"
-echo ". $install_dir/searxng-pyenv/bin/activate" >  "$install_dir/.profile"
+echo ". $install_dir/searxng-pyenv/bin/activate" > "$install_dir/.profile"
 EOF
 
 	# Check if virtualenv was sourced from the login
@@ -37,6 +37,7 @@ EOF
 command -v python && python --version
 EOF
 
+	# Install with pip
 	sudo -H -u $app -i bash << EOF
 pip install --upgrade pip
 pip install --upgrade setuptools
@@ -81,9 +82,9 @@ After=syslog.target
 [Service]
 RuntimeDirectory=%i
 ExecStart=/usr/bin/uwsgi \
-        --ini /etc/uwsgi/apps-available/%i.ini \
-        --socket /run/%i/app.socket \
-        --logto /var/log/uwsgi/%i/%i.log
+	--ini /etc/uwsgi/apps-available/%i.ini \
+	--socket /run/%i/app.socket \
+	--logto /var/log/uwsgi/%i/%i.log
 User=%i
 Group=www-data
 Restart=always
@@ -131,14 +132,18 @@ ynh_add_uwsgi_service () {
 	mkdir -p "/etc/systemd/system/uwsgi-app@$app.service.d"
 	if [ -e "../conf/uwsgi-app@override.service" ]
 	then
-		ynh_config_add --template="uwsgi-app@override.service" --destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
+		ynh_config_add --template="uwsgi-app@override.service" \
+			--destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
 	fi
 
 	systemctl daemon-reload
-	ynh_systemctl --service="uwsgi-app@$app.service" --action="enable"
+	ynh_systemctl --service="uwsgi-app@$app.service" \
+		--action="enable"
 
 	# Add as a service
-	yunohost service add "uwsgi-app@$app" --description="uWSGI service for searxng" --log "/var/log/uwsgi/$app/$app.log"
+	yunohost service add "uwsgi-app@$app" \
+		--description="uWSGI service for searxng" \
+		--log "/var/log/uwsgi/$app/$app.log"
 }
 
 # Remove the dedicated uwsgi ini file
@@ -149,8 +154,10 @@ ynh_remove_uwsgi_service () {
 	if [ -e "$finaluwsgiini" ]
 	then
 		yunohost service remove "uwsgi-app@$app"
-		ynh_systemctl --service="uwsgi-app@$app.service" --action="stop"
-		ynh_systemctl --service="uwsgi-app@$app.service" --action="disable"
+		ynh_systemctl --service="uwsgi-app@$app.service" \
+			--action="stop"
+		ynh_systemctl --service="uwsgi-app@$app.service" \
+			--action="disable"
 
 		ynh_safe_rm "$finaluwsgiini"
 		ynh_safe_rm "/var/log/uwsgi/$app"
@@ -178,6 +185,9 @@ ynh_restore_uwsgi_service () {
 
 	mkdir -p "/var/log/uwsgi/$app"
 
-	ynh_systemctl --service="uwsgi-app@$app.service" --action="enable"
-	yunohost service add "uwsgi-app@$app" --description="uWSGI service for searxng" --log "/var/log/uwsgi/$app/$app.log"
+	ynh_systemctl --service="uwsgi-app@$app.service" \
+		--action="enable"
+	yunohost service add "uwsgi-app@$app" \
+		--description="uWSGI service for searxng" \
+		--log "/var/log/uwsgi/$app/$app.log"
 }

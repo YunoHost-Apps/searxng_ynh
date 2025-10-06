@@ -7,11 +7,26 @@ source /usr/share/yunohost/helpers
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression "Setting up source files..."
-myynh_source_searxng
 
-ynh_script_progression "Installing SearXNG..."
+myynh_setup_source
+
+#=================================================
+# MAKE INSTALL
+#=================================================
+ynh_script_progression "Making install..."
 
 myynh_install_searxng
+
+#=================================================
+# APP INITIAL CONFIGURATION
+#=================================================
+ynh_script_progression "Adding $app's configuration files..."
+
+secret_key=$(ynh_string_random)
+ynh_config_add --template="settings.yml" \
+	--destination="$install_dir/settings.yml"
+ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" \
+	--destination="$install_dir/limiter.toml"
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -22,17 +37,6 @@ ynh_config_add_nginx
 
 ynh_add_uwsgi_service
 
-#=================================================
-# APP INITIAL CONFIGURATION
-#=================================================
-# ADD A CONFIGURATION
-#=================================================
-ynh_script_progression "Adding $app's configuration..."
-
-secret_key=$(ynh_string_random)
-ynh_config_add --template="settings.yml" --destination="$install_dir/settings.yml"
-ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" --destination="$install_dir/limiter.toml"
-
 myynh_set_permissions
 
 #=================================================
@@ -40,7 +44,10 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" --action="start" --wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="uwsgi-app@$app.service" \
+	--action="start" \
+	--wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
+	--log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
