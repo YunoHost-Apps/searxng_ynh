@@ -27,7 +27,8 @@ ynh_delete_file_checksum "etc/nginx_conf.d/$domain/$app.conf"
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" --action="stop" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="uwsgi-app@$app.service" \
+	--action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -38,14 +39,25 @@ ynh_safe_rm "$install_dir/.profile"
 ynh_safe_rm "$install_dir/.cache"
 ynh_safe_rm "$install_dir/searxng-src"
 ynh_safe_rm "$install_dir/searxng-pyenv"
-myynh_source_searxng
+mkdir "$install_dir/searxng-src"
+ynh_setup_source --dest_dir="$install_dir/searxng-src"
+
+#=================================================
+# MAKE INSTALL
+#=================================================
+ynh_script_progression "Making install..."
+
 myynh_install_searxng
 
-if [ ! -e "$install_dir/limiter.toml" ]; then
-	ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" --destination="$install_dir/limiter.toml"
-fi
+#=================================================
+# UPDATE A CONFIG FILE
+#=================================================
+ynh_script_progression "Updating $app's configuration files..."
 
-myynh_set_permissions
+if [ ! -e "$install_dir/limiter.toml" ]; then
+	ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" \
+		--destination="$install_dir/limiter.toml"
+fi
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
@@ -56,12 +68,17 @@ ynh_config_add_nginx
 
 ynh_add_uwsgi_service
 
+myynh_set_permissions
+
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" --action="start" --wait_until="spawned uWSGI master process" --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="uwsgi-app@$app.service" \
+	--action="start" \
+	--wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
+	--log_path="/var/log/uwsgi/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT

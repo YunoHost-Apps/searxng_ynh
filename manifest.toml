@@ -29,32 +29,32 @@ ram.build = "250M"
 ram.runtime = "200M"
 
 [install]
-    [install.domain]
-    type = "domain"
+	[install.domain]
+	type = "domain"
 
-    [install.path]
-    type = "path"
-    default = "/searxng"
-    
-    [install.init_main_permission]
-    type = "group"
-    default = "visitors"
+	[install.path]
+	type = "path"
+	default = "/searxng"
+
+	[install.init_main_permission]
+	type = "group"
+	default = "visitors"
 
 [resources]
-    [resources.sources]
+	[resources.sources]
 
-        [resources.sources.main]
-        url = "https://github.com/searxng/searxng/archive/34eb32f4185a784fdf29ef990ddb1bcd79a90fe1.tar.gz"
-        sha256 = "c0d1710470a251b29369b904d0e73bbff40860aeeff54fed9413c024fb87e63a"
-        autoupdate.strategy = "latest_github_commit"
+		[resources.sources.main]
+		url = "https://github.com/searxng/searxng/archive/34eb32f4185a784fdf29ef990ddb1bcd79a90fe1.tar.gz"
+		sha256 = "c0d1710470a251b29369b904d0e73bbff40860aeeff54fed9413c024fb87e63a"
+		autoupdate.strategy = "latest_github_commit"
 
-    [resources.system_user]
+	[resources.system_user]
 
-    [resources.install_dir]
-    dir = "/var/www/__APP__"
-    
-    [resources.permissions]
-    main.url = "/"
-    
-    [resources.apt]
-    packages = "python3-dev, python3-babel, python3-venv, uwsgi, uwsgi-plugin-python3, git, build-essential, libxslt-dev, zlib1g-dev, libffi-dev, libssl-dev"
+	[resources.install_dir]
+	dir = "/var/www/__APP__"
+
+	[resources.permissions]
+	main.url = "/"
+
+	[resources.apt]
+	packages = "python3-dev, python3-babel, python3-venv, uwsgi, uwsgi-plugin-python3, git, build-essential, libxslt-dev, zlib1g-dev, libffi-dev, libssl-dev"
