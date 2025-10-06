@@ -39,8 +39,7 @@ ynh_safe_rm "$install_dir/.profile"
 ynh_safe_rm "$install_dir/.cache"
 ynh_safe_rm "$install_dir/searxng-src"
 ynh_safe_rm "$install_dir/searxng-pyenv"
-mkdir "$install_dir/searxng-src"
-ynh_setup_source --dest_dir="$install_dir/searxng-src"
+myynh_setup_source
 
 #=================================================
 # MAKE INSTALL

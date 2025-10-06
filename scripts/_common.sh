@@ -3,6 +3,27 @@
 #=================================================
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
+myynh_setup_source () {
+	# Download source
+	mkdir "$install_dir/searxng-src"
+	ynh_setup_source --dest_dir="$install_dir/searxng-src"
+
+	# Retrieve version information
+	local version=$(ynh_read_manifest "version" | cut -d'~' -f1)
+	local commit=$(ynh_read_manifest "resources.sources.main.url" | xargs basename | head -c 9)
+
+	# Set needed information
+	version_string="$version+$commit"
+	git_url=$(ynh_read_manifest "upstream.code")
+
+	# Replace hardcoded information
+	ynh_replace_regex --match="^VERSION_STRING: str = .*" \
+		--replace="VERSION_STRING: str = \"$version_string\"" \
+		--file="$install_dir/searxng-src/searx/version.py"
+	ynh_replace_regex --match="^GIT_URL: str = .*" \
+		--replace="GIT_URL: str = \"$git_url\"" \
+		--file="$install_dir/searxng-src/searx/version.py"
+}
 
 myynh_install_searxng () {
 	# Create the virtual environment
@@ -28,11 +49,6 @@ pip install --upgrade lxml
 cd "$install_dir/searxng-src"
 pip install --use-pep517 --no-build-isolation -e .
 EOF
-
-	# Retrieve version information
-	local version=$(ynh_read_manifest "version" | cut -d'~' -f1)
-	local commit=$(ynh_read_manifest "resources.sources.main.url" | xargs basename | head -c 9)
-	version_string="$version+$commit"
 }
 
 # Set permissions
