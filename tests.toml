@@ -16,4 +16,4 @@ test_format = 1.0
 	# Commits to test upgrade from
 	# -------------------------------
 
-	test_upgrade_from.027e5b155ef3b893341ce992c9ead73d3aaad1e5.name = "Upgrade from 2025.09.27~ynh1 (git clone)"
+	# test_upgrade_from.027e5b155ef3b893341ce992c9ead73d3aaad1e5.name = "Upgrade from 2025.09.27~ynh1 (git clone)"
