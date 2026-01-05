@@ -53,95 +53,11 @@ myynh_set_permissions () {
 	chown -R $app: "$install_dir"
 	chmod u=rwX,g=rX,o= "$install_dir"
 	chmod -R o-rwx "$install_dir"
-
-	chown $app:root "/etc/uwsgi/apps-available/$app.ini"
-	chown -R $app:root "/etc/systemd/system/uwsgi-app@$app.service.d" || true
-
-	chown $app:root "/var/log/uwsgi/$app"
-	chmod -R u=rwX,g=rX,o= "/var/log/uwsgi/$app"
 }
 
 #=================================================
 # UWSGI HELPERS
 #=================================================
-
-# Check if system wide templates are available and correcly configured
-#
-# usage: ynh_check_global_uwsgi_config
-ynh_check_global_uwsgi_config () {
-	uwsgi --version || ynh_die "You need to add uwsgi (and appropriate plugin) as a dependency"
-
-	cat > "/etc/systemd/system/uwsgi-app@.service" <<EOF
-[Unit]
-Description=%i uWSGI app
-After=syslog.target
-
-[Service]
-RuntimeDirectory=%i
-ExecStart=/usr/bin/uwsgi \
-	--ini /etc/uwsgi/apps-available/%i.ini \
-	--socket /run/%i/app.socket \
-	--logto /var/log/uwsgi/%i/%i.log
-User=%i
-Group=www-data
-Restart=always
-RestartSec=10
-KillSignal=SIGQUIT
-Type=notify
-NotifyAccess=all
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-	systemctl daemon-reload
-}
-
-# Create a dedicated uwsgi ini file to use with generic uwsgi service
-#
-# To be able to customise the settings of the systemd unit you can override the rules with the file "conf/uwsgi-app@override.service".
-# This file will be automatically placed on the good place
-#
-
-# Note that the service need to be started manually at the end of the installation.
-# Generally you can start the service with this command:
-# ynh_systemctl --service "uwsgi-app@$app.service" --wait_until "WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" --log_path "/var/log/uwsgi/$app/$app.log"
-#
-# usage: ynh_add_uwsgi_service
-#
-# to interact with your service: `systemctl <action> uwsgi-app@app`
-ynh_add_uwsgi_service () {
-	ynh_check_global_uwsgi_config
-
-	local finaluwsgiini="/etc/uwsgi/apps-available/$app.ini"
-
-	# www-data group is needed since it is this nginx who will start the service
-	usermod --append --groups www-data "$app" || ynh_die "It wasn't possible to add user $app to group www-data"
-
-	ynh_config_add --template="uwsgi.ini" --destination="$finaluwsgiini"
-	ynh_store_file_checksum "$finaluwsgiini"
-	chown $app:root "$finaluwsgiini"
-
-	# make sure the folder for logs exists and set authorizations
-	mkdir -p "/var/log/uwsgi/$app"
-
-	# Setup specific Systemd rules if necessary
-	mkdir -p "/etc/systemd/system/uwsgi-app@$app.service.d"
-	if [ -e "../conf/uwsgi-app@override.service" ]
-	then
-		ynh_config_add --template="uwsgi-app@override.service" \
-			--destination="/etc/systemd/system/uwsgi-app@$app.service.d/override.conf"
-	fi
-
-	systemctl daemon-reload
-	ynh_systemctl --service="uwsgi-app@$app.service" \
-		--action="enable"
-
-	# Add as a service
-	yunohost service add "uwsgi-app@$app" \
-		--description="uWSGI service for searxng" \
-		--log "/var/log/uwsgi/$app/$app.log"
-}
 
 # Remove the dedicated uwsgi ini file
 #
@@ -162,32 +78,9 @@ ynh_remove_uwsgi_service () {
 	fi
 }
 
-# Backup the dedicated uwsgi config
-# Should be used in backup script
-#
-# usage: ynh_backup_uwsgi_service
-ynh_backup_uwsgi_service () {
-	ynh_backup "/etc/uwsgi/apps-available/$app.ini"
-	ynh_backup "/etc/systemd/system/uwsgi-app@$app.service.d" || true
-}
-
-# Restore the dedicated uwsgi config
-# Should be used in restore script
-#
-# usage: ynh_restore_uwsgi_service
-ynh_restore_uwsgi_service () {
-	ynh_check_global_uwsgi_config
-	ynh_restore "/etc/uwsgi/apps-available/$app.ini"
-	ynh_restore "/etc/systemd/system/uwsgi-app@$app.service.d" || true
-
-	mkdir -p "/var/log/uwsgi/$app"
-
-	ynh_systemctl --service="uwsgi-app@$app.service" \
-		--action="enable"
-	yunohost service add "uwsgi-app@$app" \
-		--description="uWSGI service for searxng" \
-		--log "/var/log/uwsgi/$app/$app.log"
-}
+#=================================================
+# SYSTEMD SOCKET HELPERS
+#=================================================
 
 # Create a dedicated systemd socket config
 # usage: ynh_add_systemd_socket_config [--socket=socket] [--template=template]
@@ -199,19 +92,19 @@ ynh_restore_uwsgi_service () {
 # See the documentation of `ynh_config_add` for a description of the template
 # format and how placeholders are replaced with actual variables.
 ynh_config_add_systemd_socket() {
-    # ============ Argument parsing =============
-    local -A args_array=([s]=socket= [t]=template=)
-    local socket
-    local template
-    ynh_handle_getopts_args "$@"
-    socket="${socket:-$app}"
-    template="${template:-systemd.socket}"
-    # ===========================================
+	# ============ Argument parsing =============
+	local -A args_array=([s]=socket= [t]=template=)
+	local socket
+	local template
+	ynh_handle_getopts_args "$@"
+	socket="${socket:-$app}"
+	template="${template:-systemd.socket}"
+	# ===========================================
 
-    ynh_config_add --template="$template" --destination="/etc/systemd/system/$socket.socket"
+	ynh_config_add --template="$template" --destination="/etc/systemd/system/$socket.socket"
 
-    systemctl enable "$socket.socket" --quiet
-    systemctl daemon-reload
+	systemctl enable "$socket.socket" --quiet
+	systemctl daemon-reload
 }
 
 # Remove the dedicated systemd socket config
@@ -219,11 +112,11 @@ ynh_config_add_systemd_socket() {
 # usage: ynh_config_remove_systemd socket
 # | arg: socket   - Socket name (optionnal, $app by default)
 ynh_config_remove_systemd_socket() {
-    local socket="${1:-$app}"
-    if [ -e "/etc/systemd/system/$socket.socket" ]; then
-        ynh_systemctl --service="$socket" --action=stop
-        systemctl disable "$socket" --quiet
-        ynh_safe_rm "/etc/systemd/system/$socket.socket"
-        systemctl daemon-reload
-    fi
+	local socket="${1:-$app}"
+	if [ -e "/etc/systemd/system/$socket.socket" ]; then
+		ynh_systemctl --service="$socket" --action=stop
+		systemctl disable "$socket" --quiet
+		ynh_safe_rm "/etc/systemd/system/$socket.socket"
+		systemctl daemon-reload
+	fi
 }

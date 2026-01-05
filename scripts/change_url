@@ -8,8 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" \
-	--action="stop"
+ynh_systemctl --service="$app.service" --action="stop"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -35,13 +34,9 @@ ynh_replace --match="instance_name: SearXNG - $old_domain" \
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" \
-	--action="start" \
-	--wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
-	--log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="$app.service" --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
-
 ynh_script_progression "Change of URL completed for $app"

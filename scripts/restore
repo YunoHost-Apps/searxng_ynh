@@ -13,27 +13,30 @@ ynh_restore "$install_dir"
 #=================================================
 # RESTORE SYSTEM CONFIGURATIONS
 #=================================================
-
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-ynh_restore_uwsgi_service
+ynh_restore "/etc/systemd/system/$app.socket"
+ynh_restore "/etc/systemd/system/$app.service"
+systemctl enable "$app.service" --quiet
+yunohost service add "$app" --description="SearXNG metasearch engine" --log="/var/log/$app/$app.log"
 
 myynh_set_permissions
+
+#=================================================
+# RESTORE VARIOUS FILES
+#=================================================
+ynh_restore "/var/log/$app/"
 
 #=================================================
 # RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
 #=================================================
 ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" \
-    --action="start" \
-    --wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
-    --log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="$app.service" --action="start" --log_path="/var/log/$app/$app.log"
 
 ynh_systemctl --service="nginx" --action="reload"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
-
 ynh_script_progression "Restoration completed for $app"

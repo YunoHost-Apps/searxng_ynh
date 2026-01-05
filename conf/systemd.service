@@ -1,11 +1,12 @@
 [Unit]
 Description=SearXNG gunicorn daemon
+Requires=__APP__.socket
 After=network.target
 
 [Service]
+Type=notify
 User=__APP__
 Group=__APP__
-PermissionsStartOnly=true
 WorkingDirectory=__INSTALL_DIR__
 Environment=LANG=C.UTF-8
 Environment=LANGUAGE=C.UTF-8
@@ -13,20 +14,18 @@ Environment=LC_ALL=C.UTF-8
 Environment=SEARXNG_SETTINGS_PATH=__INSTALL_DIR__/settings.yml
 
 ExecStart=__INSTALL_DIR__/searxng-pyenv/bin/gunicorn \
-    --preload \
     --timeout 3600 \
     --graceful-timeout 3600 \
-    --worker-class gthread \
-    --workers 4 \
-    --threads 16 \
+    --workers 2 \
+    --threads 2 \
     --bind unix:/run/__APP__.sock \
+    --log-level debug \
     searx.webapp:app
 
-Restart=on-failure
-KillSignal=SIGQUIT
-Type=notify
-StandardError=inherit
-NotifyAccess=all
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
 
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit

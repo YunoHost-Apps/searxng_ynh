@@ -8,23 +8,22 @@ ynh_print_info "Declaring files to be backed up..."
 #=================================================
 # BACKUP THE APP MAIN DIR
 #=================================================
-
 ynh_backup "$install_dir"
 
 #=================================================
-# BACKUP THE NGINX CONFIGURATION
+# BACKUP SYSTEM CONFIGURATION
 #=================================================
-
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-#=================================================
-# BACKUP UWSGI CONFIG
-#=================================================
+ynh_backup "/etc/systemd/system/$app.service"
+ynh_backup "/etc/systemd/system/$app.socket"
 
-ynh_backup_uwsgi_service
+#=================================================
+# BACKUP VARIOUS FILES
+#=================================================
+ynh_backup "/var/log/$app/"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
-
 ynh_print_info "Backup script completed for $app. (YunoHost will then actually copy those files to the archive)."
