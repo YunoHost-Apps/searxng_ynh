@@ -42,8 +42,8 @@ EOF
 pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --upgrade wheel
-pip install --requirement "requirements.txt"
-pip install --requirement "requirements-server.txt"
+pip install --requirement "$install_dir/searxng-src/requirements.txt"
+pip install --requirement "$install_dir/searxng-src/requirements-server.txt"
 pip install --use-pep517 --no-build-isolation -e "$install_dir/searxng-src"
 EOF
 }
