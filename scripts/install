@@ -37,7 +37,9 @@ ynh_config_add_nginx
 
 ynh_config_add_systemd
 
-ynh_add_uwsgi_service
+ynh_config_add_systemd_socket
+
+# ynh_add_uwsgi_service
 
 myynh_set_permissions
 
@@ -46,10 +48,14 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" \
-	--action="start" \
-	--wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
-	--log_path="/var/log/uwsgi/$app/$app.log"
+# ynh_systemctl --service="uwsgi-app@$app.service" \
+# 	--action="start" \
+# 	--wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
+# 	--log_path="/var/log/uwsgi/$app/$app.log"
+
+ynh_systemctl --service=$app.socket --action="restart"
+
+ynh_systemctl --service=$app --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
