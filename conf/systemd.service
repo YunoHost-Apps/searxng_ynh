@@ -6,20 +6,22 @@ After=network.target
 User=__APP__
 Group=__APP__
 PermissionsStartOnly=true
-WorkingDirectory=__INSTALL_DIR__/searxng-src/searx
+WorkingDirectory=__INSTALL_DIR__
 Environment=LANG=C.UTF-8
 Environment=LANGUAGE=C.UTF-8
 Environment=LC_ALL=C.UTF-8
 Environment=SEARXNG_SETTINGS_PATH=__INSTALL_DIR__/settings.yml
 
 ExecStart=__INSTALL_DIR__/searxng-pyenv/bin/granian \
-    --interface wsgi searx.wsgi:application \
-    --process-name searx \
-    --uds searx.sock \
+    --interface wsgi \
+    --process-name searxng \
+    --uds searxng.sock \
     --workers 4 \
     --blocking-threads 4 \
     --workers-kill-timeout 30s \
-    --blocking-threads-idle-timeout 5m
+    --blocking-threads-idle-timeout 5m\
+    --log-level debug \
+    searx.webapp:app
 
 Restart=on-failure
 KillSignal=SIGQUIT
