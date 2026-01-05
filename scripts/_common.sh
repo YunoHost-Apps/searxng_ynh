@@ -42,11 +42,8 @@ EOF
 pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --upgrade wheel
-pip install --upgrade pyyaml
-pip install --upgrade pybind11
-pip install --upgrade tomli
-pip install --upgrade lxml
-pip install --upgrade msgspec
+pip install --requirement "requirements.txt"
+pip install --requirement "requirements-server.txt"
 pip install --use-pep517 --no-build-isolation -e "$install_dir/searxng-src"
 EOF
 }
