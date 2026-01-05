@@ -1,0 +1,34 @@
+[Unit]
+Description=SearXNG granian daemon
+After=network.target
+
+[Service]
+User=__APP__
+Group=__APP__
+PermissionsStartOnly=true
+WorkingDirectory=__INSTALL_DIR__/searxng-src/searx
+Environment=LANG=C.UTF-8
+Environment=LANGUAGE=C.UTF-8
+Environment=LC_ALL=C.UTF-8
+Environment=SEARXNG_SETTINGS_PATH=__INSTALL_DIR__/settings.yml
+
+ExecStart=__INSTALL_DIR__/searxng-pyenv/bin/granian \
+    --interface wsgi searx.wsgi:application \
+    --process-name searx \
+    --uds searx.sock \
+    --workers 4 \
+    --blocking-threads 4 \
+    --workers-kill-timeout 30s \
+    --blocking-threads-idle-timeout 5m
+
+Restart=on-failure
+KillSignal=SIGQUIT
+Type=notify
+StandardError=inherit
+NotifyAccess=all
+
+StandardOutput=append:/var/log/__APP__/__APP__.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
