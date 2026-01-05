@@ -43,7 +43,7 @@ pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --upgrade wheel
 pip install --requirement "$install_dir/searxng-src/requirements.txt"
-pip install --upgrade gunicorn"
+pip install --upgrade gunicorn
 pip install --use-pep517 --no-build-isolation -e "$install_dir/searxng-src"
 EOF
 }
