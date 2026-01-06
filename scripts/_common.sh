@@ -26,17 +26,22 @@ myynh_setup_source () {
 }
 
 myynh_install_searxng () {
-	# Create the virtual environment
-	ynh_exec_as_app python3 -m venv "$install_dir/searxng-pyenv"
+	pushd "$install_dir"
+		# Create the virtual environment
+		ynh_exec_as_app python3 -m venv "searxng-pyenv"
+		
+		# Print some version information
+		ynh_print_info "venv Python version: $(searxng-pyenv/bin/python3 -VV)"
 
-	# Print some version information
-	ynh_print_info "venv Python version: $($install_dir/searxng-pyenv/bin/python3 -VV)"
+		# Install with pip
+		ynh_exec_as_app "searxng-pyenv/bin/pip" install --upgrade pip setuptools wheel
+		ynh_exec_as_app "searxng-pyenv/bin/pip" install --requirement "searxng-src/requirements.txt"
+		ynh_exec_as_app "searxng-pyenv/bin/pip" install --upgrade gunicorn
+		ynh_exec_as_app "searxng-pyenv/bin/pip" install --use-pep517 --no-build-isolation --editable "searxng-src"
+	popd
 
-	# Install with pip
-	ynh_exec_as_app "$install_dir/searxng-pyenv/bin/pip" install --upgrade pip setuptools wheel
-	ynh_exec_as_app "$install_dir/searxng-pyenv/bin/pip" install --requirement "$install_dir/searxng-src/requirements.txt"
-	ynh_exec_as_app "$install_dir/searxng-pyenv/bin/pip" install --upgrade gunicorn
-	ynh_exec_as_app "$install_dir/searxng-pyenv/bin/pip" install --use-pep517 --no-build-isolation -e "$install_dir/searxng-src"
+	##FIXME (debug)
+	ls -ali "$install_dir/searxng-pyenv/bin"
 }
 
 # Set permissions
