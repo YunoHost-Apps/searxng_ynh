@@ -8,7 +8,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Setting up source files..."
 
-myynh_setup_source
+myynh_prepare_source
 
 #=================================================
 # MAKE INSTALL
