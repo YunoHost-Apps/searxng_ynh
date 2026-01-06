@@ -41,6 +41,8 @@ ynh_config_add --template="systemd.socket" --destination="/etc/systemd/system/$a
 ynh_config_add_systemd
 yunohost service add "$app" --description="SearXNG metasearch engine" --log="/var/log/$app/$app.log"
 
+ynh_config_add_logrotate
+
 myynh_set_permissions
 
 #=================================================
