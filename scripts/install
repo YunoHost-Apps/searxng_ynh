@@ -27,8 +27,6 @@ ynh_config_add --template="settings.yml" \
 	--destination="$install_dir/settings.yml"
 ynh_config_add --template="$install_dir/searxng-src/searx/limiter.toml" \
 	--destination="$install_dir/limiter.toml"
-ynh_config_add --template="systemd.socket" \
-	--destination="/etc/systemd/system/$app.socket"
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -37,8 +35,8 @@ ynh_script_progression "Adding system configurations related to $app..."
 
 ynh_config_add_nginx
 
-ynh_config_add --template="systemd.socket" --destination="/etc/systemd/system/$app.socket"
 ynh_config_add_systemd
+
 yunohost service add "$app" --description="SearXNG metasearch engine" --log="/var/log/$app/$app.log"
 
 ynh_config_add_logrotate
@@ -50,7 +48,7 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="$app.service" --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT

@@ -1,6 +1,5 @@
 [Unit]
 Description=SearXNG granian daemon
-Requires=__APP__.socket
 After=network.target
 
 [Service]
@@ -14,11 +13,12 @@ Environment=LC_ALL=C.UTF-8
 Environment=SEARXNG_SETTINGS_PATH=__INSTALL_DIR__/settings.yml
 
 ExecStart=__INSTALL_DIR__/searxng-pyenv/bin/granian \
-    --interface wsgi \
     --process-name searxng \
-    --uds /run/__APP__.sock \
-    --workers 2 \
-    --blocking-threads 2 \
+    --interface wsgi \
+    --host 127.0.0.1 \
+    --port __PORT__ \
+    --no-ws
+    --blocking-threads 4 \
     --workers-kill-timeout 30s \
     --blocking-threads-idle-timeout 5m \
     --log-level debug \

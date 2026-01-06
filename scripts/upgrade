@@ -36,7 +36,7 @@ fi
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service="app.service" --action="stop"
+ynh_systemctl --service="$app" --action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -73,8 +73,8 @@ ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
 
-ynh_config_add --template="systemd.socket" --destination="/etc/systemd/system/$app.socket"
 ynh_config_add_systemd
+
 yunohost service add "$app" --description="SearXNG metasearch engine" --log="/var/log/$app/$app.log"
 
 ynh_config_add_logrotate
@@ -86,7 +86,7 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="$app.service" --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
