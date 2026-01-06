@@ -36,7 +36,7 @@ myynh_install_searxng () {
 		# Install with pip
 		ynh_exec_as_app "searxng-pyenv/bin/pip" install --upgrade pip setuptools wheel
 		ynh_exec_as_app "searxng-pyenv/bin/pip" install --requirement "searxng-src/requirements.txt"
-		ynh_exec_as_app "searxng-pyenv/bin/pip" install --upgrade gunicorn
+		ynh_exec_as_app "searxng-pyenv/bin/pip" install --upgrade granian
 		ynh_exec_as_app "searxng-pyenv/bin/pip" install --use-pep517 --no-build-isolation --editable "searxng-src"
 	popd
 }
