@@ -30,7 +30,7 @@ myynh_install_searxng () {
 	ynh_exec_as_app python3 -m venv "$install_dir/searxng-pyenv"
 
 	# Print some version information
-	ynh_print_info "venv Python version: $($install_dir/venv/bin/python3 -VV)"
+	ynh_print_info "venv Python version: $($install_dir/searxng-pyenv/bin/python3 -VV)"
 
 	# Install with pip
 	ynh_exec_as_app "$install_dir/searxng-pyenv/bin/pip" install --upgrade pip setuptools wheel
