@@ -3,7 +3,7 @@
 #=================================================
 # COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
-myynh_setup_source () {
+myynh_prepare_source () {
 	# Download source
 	mkdir "$install_dir/searxng-src"
 	ynh_setup_source --dest_dir="$install_dir/searxng-src"
