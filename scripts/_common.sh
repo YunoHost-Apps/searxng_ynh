@@ -39,9 +39,6 @@ myynh_install_searxng () {
 		ynh_exec_as_app "searxng-pyenv/bin/pip" install --upgrade gunicorn
 		ynh_exec_as_app "searxng-pyenv/bin/pip" install --use-pep517 --no-build-isolation --editable "searxng-src"
 	popd
-
-	##FIXME (debug)
-	ls -ali "$install_dir/searxng-pyenv/bin"
 }
 
 # Set permissions
