@@ -17,3 +17,4 @@ test_format = 1.0
 	# -------------------------------
 
 	# test_upgrade_from.027e5b155ef3b893341ce992c9ead73d3aaad1e5.name = "Upgrade from 2025.09.27~ynh1 (git clone)"
+	test_upgrade_from.713e86b06469aa3e700d7dc754c0eebb85d6efc3.name = "Upgrade from 2025.12.19~ynh1 (uWSGI)"
