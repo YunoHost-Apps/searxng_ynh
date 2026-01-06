@@ -36,7 +36,7 @@ fi
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service="app.service" --action="stop"
+ynh_systemctl --service="$app.service" --action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
