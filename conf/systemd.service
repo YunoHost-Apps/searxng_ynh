@@ -17,7 +17,7 @@ ExecStart=__INSTALL_DIR__/searxng-pyenv/bin/granian \
     --interface wsgi \
     --host 127.0.0.1 \
     --port __PORT__ \
-    --no-ws
+    --no-ws \
     --blocking-threads 4 \
     --workers-kill-timeout 30s \
     --blocking-threads-idle-timeout 5m \
