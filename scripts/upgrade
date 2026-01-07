@@ -19,16 +19,24 @@ if [ -e "$install_dir/searx" ]; then
 	ynh_store_file_checksum "$install_dir/settings.yml"
 	ynh_delete_file_checksum "/opt/yunohost/$app/searx/settings.yml"
 fi
-
-ynh_delete_file_checksum "etc/nginx_conf.d/$domain/$app.conf"
+if ynh_app_upgrading_from_version_before 2026.01.02~ynh1
+then
+	# Remove the uwsgi config
+	yunohost service remove "uwsgi-app@$app"
+	ynh_systemctl --service="uwsgi-app@$app.service" --action="stop"
+	ynh_systemctl --service="uwsgi-app@$app.service" --action="disable"
+	ynh_safe_rm "/etc/uwsgi/apps-available/$app.ini"
+	ynh_safe_rm "/var/log/uwsgi/$app"
+	ynh_safe_rm "/etc/systemd/system/uwsgi-app@$app.service"
+	ynh_safe_rm "/etc/systemd/system/uwsgi-app@$app.service.d"
+fi
 
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
 ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" \
-	--action="stop"
+ynh_systemctl --service="$app.service" --action="stop"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -39,7 +47,7 @@ ynh_safe_rm "$install_dir/.profile"
 ynh_safe_rm "$install_dir/.cache"
 ynh_safe_rm "$install_dir/searxng-src"
 ynh_safe_rm "$install_dir/searxng-pyenv"
-myynh_setup_source
+myynh_prepare_source
 
 #=================================================
 # MAKE INSTALL
@@ -65,7 +73,11 @@ ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
 
-ynh_add_uwsgi_service
+ynh_config_add --template="systemd.socket" --destination="/etc/systemd/system/$app.socket"
+ynh_config_add_systemd
+yunohost service add "$app" --description="SearXNG metasearch engine" --log="/var/log/$app/$app.log"
+
+ynh_config_add_logrotate
 
 myynh_set_permissions
 
@@ -74,13 +86,9 @@ myynh_set_permissions
 #=================================================
 ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemctl --service="uwsgi-app@$app.service" \
-	--action="start" \
-	--wait_until="WSGI app 0 \(mountpoint='[/[:alnum:]_-]*'\) ready in [[:digit:]]* seconds on interpreter" \
-	--log_path="/var/log/uwsgi/$app/$app.log"
+ynh_systemctl --service="$app.service" --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
-
 ynh_script_progression "Upgrade of $app completed"
