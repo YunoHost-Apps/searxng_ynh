@@ -1,0 +1,10 @@
+[Unit]
+Description=SearXNG gunicorn socket
+PartOf=__APP__.service
+Before=__APP__.service
+
+[Socket]
+ListenStream=/run/__APP__.sock
+
+[Install]
+WantedBy=sockets.target

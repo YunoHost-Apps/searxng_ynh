@@ -1,10 +1,16 @@
+# SearXNG settings
 use_default_settings: true
 
 general:
+  debug: false
   instance_name: "SearXNG - __DOMAIN__"
+  privacypolicy_url: false
+  contact_url: false
 
 search:
   default_lang: "auto"
+  safe_search: 2
+  autocomplete: 'google'
 
 server:
   base_url: https://__DOMAIN____PATH__
@@ -12,3 +18,20 @@ server:
 
 ui:
   default_locale: ""
+  static_use_hash: true
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Self Information'
+  - 'Tracker URL remover'
+  - 'Ahmia blacklist'
+
+engines:
+  - name: google
+    engine: google
+    shortcut: gg
+    use_mobile_ui: false
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    display_error_messages: true
