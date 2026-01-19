@@ -5,7 +5,7 @@ name = "SearXNG"
 description.en = "Internet metasearch engine which aggregates results from more than 70 search services"
 description.fr = "Méta-moteur de recherche qui rassemble les résultats de plus de 70 services de recherche"
 
-version = "2026.01.02~ynh1"
+version = "2026.01.16~ynh1"
 
 maintainers = ["ewilly"]
 
@@ -44,8 +44,8 @@ ram.runtime = "200M"
 	[resources.sources]
 
 		[resources.sources.main]
-		url = "https://github.com/searxng/searxng/archive/3d88876a32addc8a1d1be8cf8afe8f9136a1571d.tar.gz"
-		sha256 = "a0d71a5c22079543a59f9a6a517b8ebc26ddbf8d937ccd760eb0c635478d36fb"
+		url = "https://github.com/searxng/searxng/archive/2d9f213ca84efd64a0e89bb6ea76abac6e634936.tar.gz"
+		sha256 = "ad897b2b90886c5edc28047692e4899b5577fb0634d59d405f55ebe0d99d9deb"
 		autoupdate.strategy = "latest_github_commit"
 
 	[resources.system_user]
