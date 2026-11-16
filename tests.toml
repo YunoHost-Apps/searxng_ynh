@@ -7,10 +7,6 @@ test_format = 1.0
 	# ------------
 	# Tests to run
 	# ------------
-	preinstall = """
-	sudo rm /usr/share/keyrings/yunohost-trixie.gpg
-	sudo yunohost tools regen-conf apt
-	"""
 
 	# -------------------------------
 	# Default args to use for install
